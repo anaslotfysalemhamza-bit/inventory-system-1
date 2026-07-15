@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طلبات الحسابات - نظام إدارة المخازن</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="common-styles.css">
+    <style>
+        /* ========== Sidebar Styles ========== */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            right: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .logo i {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 20px;
+        }
+
+        .close-sidebar {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .close-sidebar:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-nav {
+            padding: 15px 12px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-item i {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .nav-item span {
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .nav-separator {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+            margin: 8px 16px;
+        }
+
+        .nav-badge {
+            position: absolute;
+            left: 12px;
+            background: #ef4444;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-footer .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .sidebar-footer .user-avatar {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer .user-avatar i {
+            font-size: 40px;
+            color: #4cc9f0;
+        }
+
+        .sidebar-footer .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-footer .user-name {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-footer .user-role {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: white;
+        }
+
+        /* ========== Scrollbar ========== */
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        /* ========== Main Content ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            min-height: 100vh;
+            transition: margin-right 0.3s ease;
+        }
+
+        .page-content {
+            padding: 30px;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        /* ========== Top Bar ========== */
+        .top-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #1f2937;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .menu-toggle:hover {
+            background: #f3f4f6;
+        }
+
+        .top-bar-title h2 {
+            font-size: 20px;
+            color: #1f2937;
+            font-weight: 700;
+        }
+
+        .top-bar-title p {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .notifications {
+            position: relative;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .notifications:hover {
+            background: #f3f4f6;
+        }
+
+        .notifications i {
+            font-size: 20px;
+            color: #6b7280;
+        }
+
+        .notifications .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+
+        .user-info:hover {
+            background: #f3f4f6;
+        }
+
+        .user-info i {
+            font-size: 32px;
+            color: #4361ee;
+        }
+
+        .user-info span {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        /* ========== Stats ========== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            padding: 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card.pending {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+        }
+
+        .stat-card.approved {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        }
+
+        .stat-card.rejected {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+        }
+
+        .stat-card.total {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .stat-card.pending .stat-icon {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .stat-card.approved .stat-icon {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .stat-card.rejected .stat-icon {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .stat-card.total .stat-icon {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .stat-details strong {
+            display: block;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .stat-details span {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* ========== Filter Tabs ========== */
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .filter-tab:hover {
+            border-color: #4361ee;
+            background: #eff6ff;
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, #4361ee, #3730a3);
+            color: white;
+            border-color: #4361ee;
+        }
+
+        /* ========== Request Card ========== */
+        .request-card {
+            background: #f9fafb;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .request-card:hover {
+            border-color: #4361ee;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.1);
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .request-user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-details h4 {
+            font-size: 18px;
+            color: #1f2937;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-details p {
+            color: #6b7280;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .role-badge {
+            background: #e0e7ff;
+            color: #4361ee;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-badge.suspended {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .request-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-item label {
+            display: block;
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-item strong {
+            color: #1f2937;
+            font-size: 15px;
+            display: block;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        /* ========== Buttons ========== */
+        .btn {
+            padding: 10px 24px;
+            border-radius: 10px;
+            border: none;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-approve:hover {
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-reject {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-reject:hover {
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-info {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .btn-info:hover {
+            background: #d1d5db;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        /* ========== Modern Card ========== */
+        .modern-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            background: linear-gradient(135deg, #4361ee, #3730a3);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .card-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        /* ========== Empty State ========== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 80px;
+            color: #d1d5db;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #6b7280;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #9ca3af;
+        }
+
+        /* ========== Notification ========== */
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 18px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10000;
+            animation: slideInRight 0.3s ease;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        /* ========== Loading ========== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+        }
+
+        .loading-spinner {
+            background: white;
+            padding: 35px;
+            border-radius: 24px;
+            text-align: center;
+        }
+
+        .loading-spinner i {
+            font-size: 48px;
+            color: #4361ee;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-spinner p {
+            margin-top: 15px;
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ========== Mobile ========== */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(100%);
+                position: fixed;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .close-sidebar {
+                display: flex;
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .request-header {
+                flex-direction: column;
+            }
+
+            .request-info {
+                grid-template-columns: 1fr;
+            }
+
+            .request-actions {
+                flex-direction: column;
+            }
+
+            .request-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .page-content {
+                padding: 15px;
+            }
+
+            .top-bar {
+                padding: 0 15px;
+            }
+
+            .user-info span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner"></i>
+            <p>جاري التحميل...</p>
+        </div>
+    </div>
+
+    <div class="app">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="top-bar-title">
+                    <h2><i class="fas fa-user-check"></i> إدارة طلبات الحسابات</h2>
+                    <p id="currentDateTime"></p>
+                </div>
+                <div class="top-bar-actions">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notificationBadge">0</span>
+                    </div>
+                    <div class="user-info" onclick="window.location.href='profile.html'" style="cursor: pointer;">
+                        <div class="user-avatar-top" id="topBarAvatar">
+                            <!-- هيتعبأ بالجافاسكريبت -->
+                        </div>
+                        <span class="user-name-top" id="userName">مدير النظام</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- ====== الإحصائيات ====== -->
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card pending">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-details">
+                            <strong id="pendingCount">0</strong>
+                            <span>في الانتظار</span>
+                        </div>
+                    </div>
+                    <div class="stat-card approved">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-details">
+                            <strong id="approvedCount">0</strong>
+                            <span>تم القبول</span>
+                        </div>
+                    </div>
+                    <div class="stat-card rejected">
+                        <div class="stat-icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="stat-details">
+                            <strong id="rejectedCount">0</strong>
+                            <span>تم الرفض</span>
+                        </div>
+                    </div>
+                    <div class="stat-card total">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-details">
+                            <strong id="totalCount">0</strong>
+                            <span>إجمالي الطلبات</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ====== قائمة الطلبات ====== -->
+                <div class="modern-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list"></i> قائمة الطلبات</h3>
+                        <button class="btn btn-info" onclick="loadRequests()"
+                            style="background: rgba(255,255,255,0.2); color: white;">
+                            <i class="fas fa-sync-alt"></i> تحديث
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="filter-tabs">
+                            <div class="filter-tab active" onclick="filterRequests('all', this)">
+                                <i class="fas fa-list"></i> الكل
+                            </div>
+                            <div class="filter-tab" onclick="filterRequests('pending', this)">
+                                <i class="fas fa-clock"></i> في الانتظار
+                            </div>
+                            <div class="filter-tab" onclick="filterRequests('active', this)">
+                                <i class="fas fa-check-circle"></i> مقبول
+                            </div>
+                            <div class="filter-tab" onclick="filterRequests('rejected', this)">
+                                <i class="fas fa-times-circle"></i> مرفوض
+                            </div>
+                            <div class="filter-tab" onclick="filterRequests('suspended', this)">
+                                <i class="fas fa-ban"></i> موقوف
+                            </div>
+                        </div>
+
+                        <div id="requestsList">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <h3>لا توجد طلبات</h3>
+                                <p>سيتم عرض طلبات الحسابات الجديدة هنا</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="sidebar.js"></script>
+    <script src="check-permission.js"></script>
+    <script>
+        // ===================================================================
+        //  التعديلات الجوهرية:
+        //  1. إزالة ALL البيانات الوهمية من loadRequests() نهائياً.
+        //  2. إصلاح الإحصائيات لتكون حقيقية 100% من البيانات المستلمة.
+        //  3. إضافة إحصائية "إجمالي الطلبات".
+        //  4. حساب دقيق لـ pending / approved / rejected / suspended.
+        // ===================================================================
+
+        // ========== استخدام API_URL من check-permission.js ==========
+
+        // ========== التحقق من الصلاحيات ==========
+        if (typeof checkAdminPermission === 'function') {
+            checkAdminPermission();
+        }
+
+        var currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser) {
+            document.getElementById('userName').innerText = currentUser.name;
+        } else {
+            window.location.href = 'login.html';
+        }
+
+        var allRequests = [];
+        var currentFilter = 'all';
+
+        // ========== تحميل الطلبات ==========
+        async function loadRequests() {
+            showLoading(true);
+            try {
+                var response = await fetch(API_URL + '/pending-accounts');
+                var result = await response.json();
+                console.log('📥 بيانات الطلبات المستلمة:', result);
+
+                if (result.success && result.data) {
+                    allRequests = result.data || [];
+                    console.log('✅ تم تحميل ' + allRequests.length + ' طلب من السيرفر');
+                } else {
+                    // ❌ لا نستخدم بيانات وهمية - نتركها فارغة
+                    allRequests = [];
+                    console.log('📋 لا توجد طلبات من السيرفر');
+                }
+
+                // حفظ في localStorage للاستخدام المؤقت
+                localStorage.setItem('pendingRequests', JSON.stringify(allRequests));
+
+                // تحديث الإحصائيات وعرض الطلبات
+                updateStats();
+                renderRequests();
+
+            } catch (error) {
+                console.error('❌ Error loading requests:', error);
+                // ❌ في حالة الخطأ، لا نستخدم بيانات وهمية
+                allRequests = [];
+                localStorage.setItem('pendingRequests', JSON.stringify(allRequests));
+                updateStats();
+                renderRequests();
+                showNotification('حدث خطأ في الاتصال بالسيرفر', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ========== تحديث الإحصائيات بشكل دقيق ==========
+        function updateStats() {
+            var pending = 0;
+            var approved = 0;
+            var rejected = 0;
+            var suspended = 0;
+            var total = allRequests.length;
+
+            for (var i = 0; i < allRequests.length; i++) {
+                var r = allRequests[i];
+                var status = r.account_status || 'pending';
+
+                switch (status) {
+                    case 'pending':
+                        pending++;
+                        break;
+                    case 'active':
+                        approved++;
+                        break;
+                    case 'rejected':
+                        rejected++;
+                        break;
+                    case 'suspended':
+                        suspended++;
+                        break;
+                    default:
+                        // إذا كانت الحالة غير معروفة، نعتبرها pending
+                        pending++;
+                        break;
+                }
+            }
+
+            // تحديث واجهة المستخدم
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('approvedCount').textContent = approved;
+            document.getElementById('rejectedCount').textContent = rejected;
+            document.getElementById('totalCount').textContent = total;
+
+            // تحديث شارة الإشعارات بعدد الطلبات المعلقة
+            var badge = document.getElementById('notificationBadge');
+            if (badge) {
+                badge.textContent = pending;
+                badge.style.display = pending > 0 ? 'inline-block' : 'none';
+            }
+
+            console.log('📊 الإحصائيات:', {
+                pending: pending,
+                approved: approved,
+                rejected: rejected,
+                suspended: suspended,
+                total: total
+            });
+        }
+
+        // ========== عرض الطلبات ==========
+        function renderRequests() {
+            var container = document.getElementById('requestsList');
+
+            // تصفية الطلبات حسب الفلتر المختار
+            var filtered = [];
+            if (currentFilter === 'all') {
+                filtered = allRequests;
+            } else {
+                for (var i = 0; i < allRequests.length; i++) {
+                    var r = allRequests[i];
+                    var status = r.account_status || 'pending';
+                    if (status === currentFilter) {
+                        filtered.push(r);
+                    }
+                }
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>لا توجد طلبات</h3>
+                        <p>${currentFilter === 'all' ? 'لا توجد طلبات حسابات حالياً' : 'لا توجد طلبات ' + getFilterLabel(currentFilter)}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            var html = '';
+            for (var i = 0; i < filtered.length; i++) {
+                var request = filtered[i];
+                var initials = request.name ? request.name.charAt(0).toUpperCase() : '?';
+                var roleNameAr = getRoleNameAr(request.role);
+                var status = request.account_status || 'pending';
+                var statusClass = status === 'active' ? 'active' :
+                    status === 'rejected' ? 'rejected' :
+                        status === 'suspended' ? 'suspended' : 'pending';
+                var statusLabel = getStatusLabel(status);
+                var statusIcon = getStatusIcon(status);
+
+                var createdDate = 'غير معروف';
+                if (request.created_at) {
+                    try {
+                        createdDate = new Date(request.created_at).toLocaleDateString('ar-EG', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    } catch (e) {
+                        createdDate = request.created_at;
+                    }
+                }
+
+                // تحديد ما إذا كان يمكن الموافقة أو الرفض
+                var canApprove = (status === 'pending' || status === 'suspended');
+                var isApproved = (status === 'active');
+                var isRejected = (status === 'rejected');
+
+                html += `
+                    <div class="request-card">
+                        <div class="request-header">
+                            <div class="request-user-info">
+                                <div class="user-avatar">${initials}</div>
+                                <div class="user-details">
+                                    <h4>${request.name || 'غير معروف'}</h4>
+                                    <p><i class="fas fa-envelope"></i> ${request.email || 'بريد غير معروف'}</p>
+                                    <p><i class="fas fa-briefcase"></i> <span class="role-badge">${roleNameAr}</span></p>
+                                </div>
+                            </div>
+                            <span class="status-badge ${statusClass}">
+                                <i class="${statusIcon}"></i> ${statusLabel}
+                            </span>
+                        </div>
+
+                        <div class="request-info">
+                            <div class="info-item">
+                                <label><i class="fas fa-phone"></i> رقم الهاتف</label>
+                                <strong>${request.phone || 'غير مسجل'}</strong>
+                            </div>
+                            <div class="info-item">
+                                <label><i class="fas fa-calendar"></i> تاريخ التسجيل</label>
+                                <strong>${createdDate}</strong>
+                            </div>
+                            <div class="info-item">
+                                <label><i class="fas fa-check-circle"></i> حالة التفعيل</label>
+                                <strong>${request.is_active ? 'مفعل ✓' : 'غير مفعل ✗'}</strong>
+                            </div>
+                            <div class="info-item">
+                                <label><i class="fas fa-shield-alt"></i> حالة الموافقة</label>
+                                <strong>${request.is_approved ? 'موافق عليه ✓' : 'في انتظار الموافقة ⏳'}</strong>
+                            </div>
+                        </div>
+
+                        <div class="request-actions">
+                `;
+
+                if (canApprove) {
+                    html += `
+                        <button class="btn btn-approve" onclick="approveRequest('${request.email}', '${request.name || request.email}')">
+                            <i class="fas fa-check"></i> قبول
+                        </button>
+                        <button class="btn btn-reject" onclick="rejectRequest('${request.email}', '${request.name || request.email}')">
+                            <i class="fas fa-times"></i> رفض
+                        </button>
+                    `;
+                } else if (isApproved) {
+                    html += `
+                        <button class="btn btn-info" onclick="viewUserDetails(${request.id})">
+                            <i class="fas fa-eye"></i> عرض التفاصيل
+                        </button>
+                        <button class="btn btn-warning" onclick="suspendUser('${request.email}')">
+                            <i class="fas fa-ban"></i> إيقاف
+                        </button>
+                    `;
+                } else if (isRejected) {
+                    html += `
+                        <button class="btn btn-approve" onclick="approveRequest('${request.email}', '${request.name || request.email}')">
+                            <i class="fas fa-undo"></i> إعادة القبول
+                        </button>
+                    `;
+                }
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // ========== الموافقة على طلب ==========
+        async function approveRequest(email, name) {
+            if (!confirm('هل تريد الموافقة على حساب ' + name + '؟')) return;
+
+            showLoading(true);
+            try {
+                var response = await fetch(API_URL + '/approve-account', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        approved: true,
+                        adminName: currentUser ? currentUser.name : 'مدير'
+                    })
+                });
+
+                var result = await response.json();
+
+                if (result.success) {
+                    showNotification('تم قبول حساب ' + name + ' بنجاح', 'success');
+                    if (typeof logUserActivity === 'function') {
+                        logUserActivity('APPROVE_ACCOUNT', 'وافق على حساب: ' + name + ' (' + email + ')');
+                    }
+                    await loadRequests();
+                } else {
+                    showNotification(result.message || 'فشل في الموافقة على الحساب', 'error');
+                }
+            } catch (error) {
+                console.error('Error approving request:', error);
+                showNotification('حدث خطأ في الاتصال بالسيرفر', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ========== رفض طلب ==========
+        async function rejectRequest(email, name) {
+            var reason = prompt('لماذا تريد رفض حساب ' + name + '؟ (اختياري)');
+            if (reason === null) return;
+
+            showLoading(true);
+            try {
+                var response = await fetch(API_URL + '/approve-account', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        approved: false,
+                        adminName: currentUser ? currentUser.name : 'مدير',
+                        reason: reason || 'لم يتم تحديد سبب'
+                    })
+                });
+
+                var result = await response.json();
+
+                if (result.success) {
+                    showNotification('تم رفض حساب ' + name, 'info');
+                    if (typeof logUserActivity === 'function') {
+                        logUserActivity('REJECT_ACCOUNT', 'رفض حساب: ' + name + ' (' + email + ') - السبب: ' + (reason || 'غير محدد'));
+                    }
+                    await loadRequests();
+                } else {
+                    showNotification(result.message || 'فشل في رفض الحساب', 'error');
+                }
+            } catch (error) {
+                console.error('Error rejecting request:', error);
+                showNotification('حدث خطأ في الاتصال بالسيرفر', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ========== إيقاف مستخدم ==========
+        async function suspendUser(email) {
+            if (!confirm('هل تريد إيقاف هذا المستخدم؟')) return;
+
+            showLoading(true);
+            try {
+                var response = await fetch(API_URL + '/suspend-account', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+
+                var result = await response.json();
+
+                if (result.success) {
+                    showNotification('تم إيقاف المستخدم بنجاح', 'success');
+                    await loadRequests();
+                } else {
+                    showNotification(result.message || 'فشل في إيقاف المستخدم', 'error');
+                }
+            } catch (error) {
+                console.error('Error suspending user:', error);
+                showNotification('حدث خطأ في الاتصال بالسيرفر', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ========== فلترة الطلبات ==========
+        function filterRequests(status, element) {
+            currentFilter = status;
+
+            var tabs = document.querySelectorAll('.filter-tab');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            if (element) {
+                element.classList.add('active');
+            }
+
+            renderRequests();
+        }
+
+        // ========== دوال مساعدة ==========
+        function getRoleNameAr(role) {
+            var roles = {
+                'admin': 'مدير النظام',
+                'storekeeper': 'أمين مخزن',
+                'cashier': 'كاشير'
+            };
+            return roles[role] || role;
+        }
+
+        function getStatusLabel(status) {
+            var labels = {
+                'pending': 'في الانتظار',
+                'active': 'نشط',
+                'rejected': 'مرفوض',
+                'suspended': 'موقوف'
+            };
+            return labels[status] || status;
+        }
+
+        function getStatusIcon(status) {
+            var icons = {
+                'pending': 'fas fa-clock',
+                'active': 'fas fa-check-circle',
+                'rejected': 'fas fa-times-circle',
+                'suspended': 'fas fa-ban'
+            };
+            return icons[status] || 'fas fa-question-circle';
+        }
+
+        function getFilterLabel(filter) {
+            var labels = {
+                'pending': 'في الانتظار',
+                'active': 'المقبولة',
+                'rejected': 'المرفوضة',
+                'suspended': 'الموقوفة'
+            };
+            return labels[filter] || '';
+        }
+
+        function viewUserDetails(userId) {
+            window.location.href = 'profile.html?userId=' + userId;
+        }
+
+        // ========== إظهار/إخفاء Loading ==========
+        function showLoading(show) {
+            var overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.style.display = show ? 'flex' : 'none';
+            }
+        }
+
+        // ========== إظهار الإشعارات ==========
+        function showNotification(message, type) {
+            type = type || 'info';
+            var notification = document.createElement('div');
+            notification.className = 'notification ' + type;
+            var iconClass = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+            notification.innerHTML = '<i class="fas ' + iconClass + '"></i> ' + message;
+            document.body.appendChild(notification);
+
+            setTimeout(function () {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(50px)';
+                setTimeout(function () { notification.remove(); }, 300);
+            }, 4000);
+        }
+
+        // ========== تحديث التاريخ والوقت ==========
+        function updateDateTime() {
+            var now = new Date();
+            var dateTimeStr = now.toLocaleString('ar-EG', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('currentDateTime').innerHTML = '<i class="far fa-calendar-alt"></i> ' + dateTimeStr;
+        }
+
+        // ========== Toggle Sidebar on Mobile ==========
+        var menuToggle = document.getElementById('menuToggle');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function () {
+                var sidebar = document.getElementById('sidebar');
+                if (sidebar) {
+                    sidebar.classList.toggle('open');
+                }
+            });
+        }
+
+        // ========== تشغيل الصفحة ==========
+        document.addEventListener('DOMContentLoaded', function () {
+            updateDateTime();
+            setInterval(updateDateTime, 60000);
+            loadRequests();
+            setInterval(loadRequests, 30000);
+        });
+    </script>
+    <script src="config.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="check-permission.js"></script>
+</body>
+
+</html>

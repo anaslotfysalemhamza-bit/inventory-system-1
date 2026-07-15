@@ -1,0 +1,295 @@
+/* ========== sidebar.css - النسخة النهائية مع صورة المستخدم ========== */
+
+/* ========== Sidebar Styles - موحد لجميع الصفحات ========== */
+
+.sidebar {
+    width: 280px;
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+    right: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 25px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.logo i {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 20px;
+}
+
+.close-sidebar {
+    display: none;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 20px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.close-sidebar:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-nav {
+    padding: 15px 12px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin-bottom: 4px;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: all 0.3s;
+    font-weight: 500;
+    position: relative;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+}
+
+.nav-item.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.nav-item i {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.nav-item span {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.nav-separator {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 8px 16px;
+}
+
+.nav-badge {
+    position: absolute;
+    left: 12px;
+    background: #ef4444;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* ========== Sidebar Footer - يبقى في النهاية ========== */
+.sidebar-footer {
+    padding: 16px 20px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+    background: rgba(0, 0, 0, 0.2);
+    margin-top: auto;
+}
+
+/* ========== صورة المستخدم في الـ Sidebar ========== */
+.sidebar-footer .user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.sidebar-footer .user-info:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-3px);
+}
+
+/* الحاوية الرئيسية للصورة */
+.sidebar-footer .user-avatar {
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+/* الصورة الشخصية */
+.sidebar-footer .user-avatar img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #4cc9f0;
+    transition: all 0.3s;
+}
+
+.sidebar-footer .user-avatar img:hover {
+    border-color: #667eea;
+    transform: scale(1.05);
+}
+
+/* placeholder عندما لا توجد صورة */
+.sidebar-footer .user-avatar .avatar-placeholder {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    border: 2px solid #4cc9f0;
+    transition: all 0.3s;
+}
+
+.sidebar-footer .user-avatar .avatar-placeholder:hover {
+    border-color: #667eea;
+    transform: scale(1.05);
+}
+
+/* معلومات المستخدم */
+.sidebar-footer .user-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.sidebar-footer .user-name {
+    color: white;
+    font-weight: 600;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-footer .user-role {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+}
+
+/* ========== زر تسجيل الخروج ========== */
+.logout-btn {
+    width: 100%;
+    padding: 12px;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ========== Scrollbar ========== */
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ========== Mobile Responsive ========== */
+@media (max-width: 992px) {
+    .sidebar {
+        transform: translateX(100%);
+        position: fixed;
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .close-sidebar {
+        display: flex;
+    }
+}
+
+/* ========== Overlay للموبايل ========== */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+@media (max-width: 992px) {
+    .sidebar-overlay.active {
+        display: block;
+    }
+}

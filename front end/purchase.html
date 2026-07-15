@@ -1,0 +1,2538 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>فاتورة شراء - عطارة الصالح</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="common-styles.css">
+    <style>
+        /* ====== باقي الستايلات كما هي ====== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4361ee;
+            border-radius: 10px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo i {
+            font-size: 32px;
+            background: linear-gradient(135deg, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo span {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #4cc9f0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .close-sidebar {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .close-sidebar:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .sidebar-nav {
+            padding: 20px 15px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 18px;
+            margin: 6px 0;
+            border-radius: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #4361ee, transparent);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-item:hover::before,
+        .nav-item.active::before {
+            width: 100%;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 18px;
+        }
+
+        .nav-item span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: white;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 14px;
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ef4444;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .pos-main {
+            flex: 1;
+            margin-right: 280px;
+            min-height: 100vh;
+            padding: 20px;
+            transition: margin-right 0.3s ease;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #1f2937;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .menu-toggle:hover {
+            background: #f3f4f6;
+            transform: rotate(90deg);
+        }
+
+        .pos-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .pos-header h2 {
+            font-size: 18px;
+            color: #1f2937;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ====== Top Bar User Info مع الصورة ====== */
+        .top-bar-user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 4px 16px 4px 4px;
+            background: #f3f4f6;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            border: 1.5px solid rgba(67, 97, 238, 0.15);
+        }
+
+        .top-bar-user-info:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .top-bar-user-info .user-avatar-top {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 2px solid #4361ee;
+        }
+
+        .top-bar-user-info .user-avatar-top img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .top-bar-user-info .user-avatar-top .avatar-placeholder-top {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .top-bar-user-info .user-name-top {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .top-bar-user-info .date-time {
+            font-size: 11px;
+            color: #6b7280;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-right: 4px;
+        }
+
+        /* ====== باقي الستايلات ====== */
+        .invoice-container {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .add-product-panel {
+            flex: 1;
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+
+        .code-card {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-right: 4px solid #f59e0b;
+        }
+
+        .code-card label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .code-input-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .code-input-group input {
+            flex: 2;
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            font-family: monospace;
+            font-size: 24px;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: 2px;
+            background: white;
+            color: #1f2937;
+            transition: all 0.3s;
+        }
+
+        .code-input-group input:focus {
+            border-color: #f59e0b;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .code-input-group button {
+            flex: 1;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 16px 25px;
+            border: none;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .code-input-group button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .search-section {
+            margin-bottom: 20px;
+        }
+
+        .search-section label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .search-wrapper input:focus {
+            border-color: #f59e0b;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .price-qty-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .price-qty-row .input-field {
+            flex: 1;
+        }
+
+        .input-field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .input-field input:focus {
+            border-color: #f59e0b;
+            outline: none;
+        }
+
+        .input-field select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 14px;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .input-field select:focus {
+            border-color: #f59e0b;
+            outline: none;
+        }
+
+        .products-section h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        .product-item {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 14px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #e5e7eb;
+        }
+
+        .product-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: #f59e0b;
+            background: white;
+        }
+
+        .product-code-badge {
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: 800;
+            color: #f59e0b;
+            background: #fef3c7;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            margin-bottom: 10px;
+        }
+
+        .product-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 6px;
+        }
+
+        .product-price {
+            color: #f59e0b;
+            font-weight: 800;
+            font-size: 15px;
+        }
+
+        .product-stock {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        .product-stock.low {
+            color: #ef4444;
+            font-weight: 700;
+        }
+
+        .cart-panel {
+            flex: 1.3;
+            min-width: 420px;
+        }
+
+        .cart-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 20px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .cart-header {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .cart-header h3 i {
+            margin-left: 10px;
+        }
+
+        .clear-cart-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .clear-cart-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        .cart-items-list {
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .cart-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s;
+        }
+
+        .cart-row:hover {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px 10px;
+            margin: 0 -10px;
+        }
+
+        .cart-product-info {
+            flex: 2;
+        }
+
+        .cart-product-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .cart-product-code {
+            font-size: 11px;
+            color: #6b7280;
+            font-family: monospace;
+        }
+
+        .cart-qty-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 15px;
+        }
+
+        .cart-qty-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 12px;
+            background: #f1f5f9;
+            border: none;
+            cursor: pointer;
+            font-weight: 800;
+            transition: all 0.2s;
+        }
+
+        .cart-qty-btn:hover {
+            background: #e2e8f0;
+            transform: scale(1.05);
+        }
+
+        .cart-qty-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 800;
+        }
+
+        .cart-price {
+            font-weight: 800;
+            color: #f59e0b;
+            min-width: 90px;
+            text-align: left;
+        }
+
+        .cart-remove {
+            color: #ef4444;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+
+        .cart-remove:hover {
+            background: #fee2e2;
+            transform: scale(1.1);
+        }
+
+        .cart-footer {
+            padding: 20px 25px;
+            background: #f8fafc;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .total-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #1f2937;
+        }
+
+        .total-grand {
+            font-size: 24px;
+            font-weight: 800;
+            color: #f59e0b;
+            border-top: 2px solid #e5e7eb;
+            padding-top: 15px;
+            margin-top: 8px;
+        }
+
+        /* ====== Supplier Search ====== */
+        .supplier-search-wrapper {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .supplier-search-wrapper .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 16px;
+        }
+
+        .supplier-search-wrapper input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .supplier-search-wrapper input:focus {
+            border-color: #f59e0b;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .supplier-search-wrapper .clear-btn {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            transition: color 0.3s;
+            padding: 4px;
+        }
+
+        .supplier-search-wrapper .clear-btn:hover {
+            color: #ef4444;
+        }
+
+        .supplier-results {
+            background: white;
+            border-top: 2px solid #f1f5f9;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 14px 14px;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            border: 2px solid #e5e7eb;
+            border-top: none;
+        }
+
+        .supplier-results.active {
+            display: block;
+            animation: fadeInUp 0.25s ease;
+        }
+
+        .supplier-result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .supplier-result-item:hover {
+            background: #fef3c7;
+        }
+
+        .supplier-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .supplier-result-item .supplier-name {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        .supplier-result-item .supplier-name .highlight {
+            background: #fde68a;
+            padding: 0 4px;
+            border-radius: 4px;
+        }
+
+        .supplier-result-item .supplier-phone {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .supplier-result-item .supplier-balance {
+            font-weight: 700;
+            font-size: 12px;
+            padding: 2px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .supplier-result-item .supplier-balance.debt {
+            color: #dc2626;
+            background: #fee2e2;
+        }
+
+        .supplier-result-item .supplier-balance.credit {
+            color: #059669;
+            background: #d1fae5;
+        }
+
+        .supplier-result-item .supplier-balance.zero {
+            color: #6b7280;
+            background: #f3f4f6;
+        }
+
+        .search-empty {
+            padding: 20px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .search-empty i {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 10px;
+            color: #d1d5db;
+        }
+
+        /* ====== Payment Options ====== */
+        .payment-options {
+            margin: 15px 0;
+        }
+
+        .payment-options .payment-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .payment-options .payment-btn {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #1f2937;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+        }
+
+        .payment-options .payment-btn.active {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-color: #f59e0b;
+            color: white;
+        }
+
+        .payment-options .payment-btn.cash.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-color: #10b981;
+        }
+
+        .payment-options .payment-btn.deferred.active {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-color: #f59e0b;
+        }
+
+        /* ====== Payment Input Row ====== */
+        .payment-input-row {
+            display: flex;
+            gap: 12px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .payment-input-row input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            text-align: center;
+            font-weight: 600;
+            min-width: 120px;
+            background: white;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .payment-input-row input:focus {
+            border-color: #f59e0b;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .payment-input-row .hint {
+            font-size: 12px;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+        }
+
+        .payment-summary {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-top: 1px dashed #e5e7eb;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .payment-summary .label {
+            color: #6b7280;
+        }
+
+        .payment-summary .value {
+            color: #1f2937;
+        }
+
+        .payment-summary .value.debt {
+            color: #dc2626;
+        }
+
+        .payment-summary .value.credit {
+            color: #10b981;
+        }
+
+        .location-select {
+            margin-top: 10px;
+        }
+
+        .location-select select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 14px;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .location-select select:focus {
+            border-color: #f59e0b;
+            outline: none;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 10px;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .checkout-btn.deferred {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .checkout-btn.cash {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .checkout-btn.cash:hover {
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .recent-card {
+            background: white;
+            border-radius: 20px;
+            padding: 18px 22px;
+            margin-top: 20px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .recent-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1f2937;
+        }
+
+        .invoice-buttons-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .invoice-chip {
+            background: #f1f5f9;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .invoice-chip:hover {
+            background: #f59e0b;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 14px 24px;
+            border-radius: 16px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            animation: slideInRight 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .loading-spinner {
+            background: white;
+            padding: 35px;
+            border-radius: 24px;
+            text-align: center;
+        }
+
+        .loading-spinner i {
+            font-size: 48px;
+            color: #f59e0b;
+            animation: pulse 1s infinite;
+        }
+
+        .loading-spinner p {
+            margin-top: 15px;
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 5px;
+        }
+
+        .form-group label i {
+            margin-left: 5px;
+            color: #f59e0b;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 13px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-group input:focus {
+            border-color: #f59e0b;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .close-sidebar {
+                display: flex;
+            }
+
+            .pos-main {
+                margin-right: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .invoice-container {
+                flex-direction: column;
+            }
+
+            .cart-panel {
+                min-width: 100%;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .pos-main {
+                padding: 12px;
+            }
+
+            .code-input-group {
+                flex-direction: column;
+            }
+
+            .code-input-group input {
+                font-size: 20px;
+            }
+
+            .code-input-group button {
+                width: 100%;
+            }
+
+            .price-qty-row {
+                flex-direction: column;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .cart-items-list {
+                max-height: 300px;
+            }
+
+            .cart-row {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .payment-options .payment-buttons {
+                flex-direction: column;
+            }
+
+            .payment-input-row {
+                flex-direction: column;
+            }
+
+            .payment-input-row input {
+                min-width: 100%;
+            }
+
+            .top-bar-user-info .user-name-top {
+                display: none;
+            }
+
+            .top-bar-user-info .date-time {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner"></i>
+            <p>جاري تحميل نظام الشراء...</p>
+        </div>
+    </div>
+
+    <div style="display: flex;">
+        <aside class="sidebar" id="sidebar"></aside>
+        <main class="pos-main">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="pos-header">
+                <h2><i class="fas fa-truck-loading"></i> نظام الشراء - عطارة الصالح</h2>
+                <div class="top-bar-user-info" onclick="window.location.href='profile.html'">
+                    <div class="user-avatar-top" id="topBarAvatar">
+                        <!-- هيتعبأ بالجافاسكريبت -->
+                    </div>
+                    <span class="user-name-top" id="userName"></span>
+                    <div class="date-time" id="currentDateTime"></div>
+                </div>
+            </div>
+
+            <div class="invoice-container">
+                <!-- ====== الجانب الأيسر: إضافة المنتجات ====== -->
+                <div class="add-product-panel">
+                    <div class="code-card">
+                        <label><i class="fas fa-qrcode"></i> إضافة منتج بالكود</label>
+                        <div class="code-input-group">
+                            <input type="text" id="productCodeInput" placeholder="أدخل كود المنتج" autocomplete="off">
+                            <button onclick="addProductByCode()"><i class="fas fa-plus-circle"></i> إضافة</button>
+                        </div>
+                    </div>
+
+                    <div class="search-section">
+                        <label><i class="fas fa-search"></i> بحث بالاسم</label>
+                        <div class="search-wrapper">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="ابحث باسم المنتج...">
+                        </div>
+                    </div>
+
+                    <div class="price-qty-row">
+                        <div class="input-field">
+                            <label><i class="fas fa-cubes"></i> الكمية</label>
+                            <input type="number" id="customQty" value="1" min="1">
+                        </div>
+                    </div>
+
+                    <!-- اختيار مكان التخزين -->
+                    <div class="location-select">
+                        <select id="locationSelect">
+                            <option value="1">المستودع الرئيسي</option>
+                        </select>
+                    </div>
+
+                    <div class="products-section">
+                        <h4><i class="fas fa-fire"></i> المنتجات السريعة</h4>
+                        <div class="products-grid" id="quickProducts"></div>
+                    </div>
+                </div>
+
+                <!-- ====== الجانب الأيمن: الفاتورة ====== -->
+                <div class="cart-panel">
+                    <div class="cart-card">
+                        <div class="cart-header">
+                            <h3><i class="fas fa-receipt"></i> فاتورة الشراء</h3>
+                            <button class="clear-cart-btn" onclick="clearCart()">
+                                <i class="fas fa-trash-alt"></i> مسح الكل
+                            </button>
+                        </div>
+
+                        <div class="cart-items-list" id="cartItems">
+                            <div style="text-align: center; padding: 50px; color: #9ca3af;">
+                                <i class="fas fa-cart-shopping"
+                                    style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                                <p>السلة فارغة</p>
+                            </div>
+                        </div>
+
+                        <div class="cart-footer">
+                            <!-- المورد - مع بحث متقدم مثل العملاء -->
+                            <div class="form-group">
+                                <label><i class="fas fa-building"></i> المورد</label>
+                                <div class="supplier-search-wrapper">
+                                    <i class="fas fa-search search-icon"></i>
+                                    <input type="text" id="supplierSearch" placeholder="ابحث باسم المورد أو الهاتف..."
+                                        autocomplete="off">
+                                    <button class="clear-btn" id="supplierClearBtn" onclick="clearSupplierSearch()">
+                                        <i class="fas fa-times-circle"></i>
+                                    </button>
+                                    <div class="supplier-results" id="supplierResults"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-hashtag"></i> رقم الفاتورة</label>
+                                    <input type="text" id="invoiceNumberDisplay" readonly
+                                        style="background: #f3f4f6; font-weight: bold; color: #f59e0b;">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-calendar"></i> التاريخ</label>
+                                    <input type="date" id="purchaseDate">
+                                </div>
+                            </div>
+
+                            <div class="total-line">
+                                <span>المجموع</span>
+                                <strong id="subtotal">0 ج.م</strong>
+                            </div>
+
+                            <div class="total-line total-grand">
+                                <span>الإجمالي</span>
+                                <strong id="grandTotal">0 ج.م</strong>
+                            </div>
+
+                            <!-- ====== خيارات الدفع (كاش/آجل) ====== -->
+                            <div class="payment-options">
+                                <label
+                                    style="display: block; font-size: 13px; font-weight: 600; color: #1f2937; margin-bottom: 8px;">
+                                    <i class="fas fa-money-bill-wave"></i> طريقة الدفع
+                                </label>
+                                <div class="payment-buttons">
+                                    <button class="payment-btn cash active" onclick="setPaymentMethod('cash')">
+                                        <i class="fas fa-money-bill-wave"></i> كاش
+                                    </button>
+                                    <button class="payment-btn deferred" onclick="setPaymentMethod('deferred')">
+                                        <i class="fas fa-clock"></i> آجل (دين)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- ====== حقل المبلغ المدفوع (للكاش) ====== -->
+                            <div class="payment-input-row" id="paidRow">
+                                <input type="number" id="paidAmount" placeholder="المبلغ المدفوع" min="0" step="0.01">
+                                <span class="hint"><i class="fas fa-info-circle"></i> أدخل المبلغ المدفوع</span>
+                            </div>
+
+                            <!-- ====== حقل الدفعة المقدمة (للآجل) ====== -->
+                            <div class="payment-input-row" id="deferredRow" style="display: none;">
+                                <input type="number" id="downPayment" placeholder="الدفعة المقدمة (اختياري)" min="0"
+                                    step="0.01" value="0">
+                                <span class="hint"><i class="fas fa-info-circle"></i> اتركها 0 لو مفيش دفعة مقدمة</span>
+                            </div>
+
+                            <!-- ====== ملخص الدفع ====== -->
+                            <div class="payment-summary" id="paymentSummary">
+                                <span class="label">المتبقي</span>
+                                <span class="value" id="remainingAmount">0.00 ج.م</span>
+                            </div>
+
+                            <!-- ====== زر إتمام الشراء ====== -->
+                            <button class="checkout-btn" id="checkoutBtn" onclick="checkout()">
+                                <i class="fas fa-check-circle"></i> إتمام الشراء
+                            </button>
+
+                            <!-- ====== زر طباعة الفاتورة ====== -->
+                            <button id="printBtn"
+                                style="display: none; width: 100%; margin-top: 10px; padding: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.3s;"
+                                onclick="printLastInvoice()">
+                                <i class="fas fa-print"></i> طباعة الفاتورة
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== الفواتير السابقة ====== -->
+            <div class="recent-card">
+                <h4><i class="fas fa-history"></i> آخر فواتير الشراء</h4>
+                <div class="invoice-buttons-list" id="recentInvoices"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="check-permission.js"></script>
+
+    <script>
+        // ================================================================
+        //  المتغيرات العامة
+        // ================================================================
+        var currentUser = null;
+        var purchaseItems = [];
+        var allProducts = [];
+        var allStock = [];
+        var allSuppliers = [];
+        var allLocations = [];
+        var allPurchases = [];
+        var lastInvoiceData = null;
+        var lastInvoiceNumber = null;
+        var selectedSupplier = null;
+        var searchTimeout = null;
+        var currentPaymentMethod = 'cash';
+        var isDeferred = false;
+
+        // ================================================================
+        //  تحديث الصورة في الـ Top Bar
+        // ================================================================
+        function updateTopBarAvatar() {
+            var user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user) return;
+
+            var avatarContainer = document.getElementById('topBarAvatar');
+            if (!avatarContainer) return;
+
+            var profilePicture = localStorage.getItem('user_profile_picture_' + user.id) || '';
+            var userName = user.name || 'مستخدم';
+            var userInitial = userName.charAt(0).toUpperCase();
+
+            avatarContainer.innerHTML = '';
+
+            if (profilePicture && profilePicture !== 'null' && profilePicture !== 'undefined' && profilePicture !== '') {
+                var img = document.createElement('img');
+                img.src = profilePicture;
+                img.alt = userName;
+                img.title = userName;
+                avatarContainer.appendChild(img);
+            } else {
+                var div = document.createElement('div');
+                div.className = 'avatar-placeholder-top';
+                div.textContent = userInitial;
+                avatarContainer.appendChild(div);
+            }
+
+            // تحديث اسم المستخدم
+            document.getElementById('userName').textContent = userName;
+        }
+
+        // ================================================================
+        //  دوال API
+        // ================================================================
+        async function fetchAPI(endpoint, options) {
+            try {
+                var url = API_URL + endpoint;
+                console.log('📡 Fetching:', url);
+
+                var fetchOptions = {
+                    method: options?.method || 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                };
+
+                if (options?.body) {
+                    fetchOptions.body = JSON.stringify(options.body);
+                }
+
+                var response = await fetch(url, fetchOptions);
+
+                if (!response.ok) {
+                    console.error('❌ HTTP Error:', response.status, response.statusText);
+                    throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+                }
+
+                var result = await response.json();
+                console.log('📦 Response:', result);
+                return result;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        async function fetchProducts() {
+            try {
+                var result = await fetchAPI('/products');
+                if (result.success) {
+                    allProducts = result.data || [];
+                    return allProducts;
+                }
+                return [];
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                return [];
+            }
+        }
+
+        async function fetchStock() {
+            try {
+                var result = await fetchAPI('/stock');
+                if (result.success) {
+                    allStock = result.data || [];
+                    return allStock;
+                }
+                return [];
+            } catch (error) {
+                console.error('Error fetching stock:', error);
+                return [];
+            }
+        }
+
+        async function fetchSuppliers() {
+            try {
+                var result = await fetchAPI('/suppliers');
+                if (result.success) {
+                    allSuppliers = result.data || [];
+                    console.log('✅ تم تحميل ' + allSuppliers.length + ' مورد');
+                    return allSuppliers;
+                }
+                return [];
+            } catch (error) {
+                console.error('Error fetching suppliers:', error);
+                return [];
+            }
+        }
+
+        async function fetchLocations() {
+            try {
+                var result = await fetchAPI('/locations');
+                if (result.success) {
+                    allLocations = result.data || [];
+                    return allLocations;
+                }
+                return [];
+            } catch (error) {
+                console.error('Error fetching locations:', error);
+                return [];
+            }
+        }
+
+        async function fetchPurchases() {
+            try {
+                var result = await fetchAPI('/purchases');
+                if (result.success) {
+                    allPurchases = result.data || [];
+                    return allPurchases;
+                }
+                return [];
+            } catch (error) {
+                console.error('Error fetching purchases:', error);
+                return [];
+            }
+        }
+
+        async function savePurchaseToAPI(invoice) {
+            try {
+                var result = await fetchAPI('/purchases', {
+                    method: 'POST',
+                    body: invoice
+                });
+                return result;
+            } catch (error) {
+                console.error('Error saving purchase:', error);
+                return { success: false, message: error.message };
+            }
+        }
+
+        // ================================================================
+        //  دوال مساعدة
+        // ================================================================
+        function showLoading(show) {
+            var overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.style.display = show ? 'flex' : 'none';
+        }
+
+        function showNotification(message, type) {
+            type = type || 'success';
+            var n = document.createElement('div');
+            n.className = 'notification ' + type;
+            var icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+            n.innerHTML = '<i class="fas ' + icon + '"></i> ' + message;
+            document.body.appendChild(n);
+            setTimeout(function () { n.remove(); }, 4000);
+        }
+
+        function updateDateTime() {
+            var now = new Date();
+            document.getElementById('currentDateTime').innerHTML = now.toLocaleString('ar-EG');
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // ================================================================
+        //  توليد رقم فاتورة متسلسل
+        // ================================================================
+        function getNextInvoiceNumber() {
+            var lastNumber = parseInt(localStorage.getItem('lastPurchaseInvoiceNumber') || '0');
+            var nextNumber = lastNumber + 1;
+            localStorage.setItem('lastPurchaseInvoiceNumber', nextNumber.toString());
+            return 'PUR-' + String(nextNumber).padStart(6, '0');
+        }
+
+        function displayInvoiceNumber() {
+            var num = getNextInvoiceNumber();
+            document.getElementById('invoiceNumberDisplay').value = num;
+            return num;
+        }
+
+        // ================================================================
+        //  تحميل الأماكن
+        // ================================================================
+        async function loadLocations() {
+            await fetchLocations();
+            var sel = document.getElementById('locationSelect');
+            sel.innerHTML = '';
+            for (var i = 0; i < allLocations.length; i++) {
+                sel.innerHTML += '<option value="' + allLocations[i].id + '">' + allLocations[i].name + '</option>';
+            }
+        }
+
+        // ================================================================
+        //  البحث عن الموردين
+        // ================================================================
+        function setupSupplierSearch() {
+            var input = document.getElementById('supplierSearch');
+            var resultsContainer = document.getElementById('supplierResults');
+            var clearBtn = document.getElementById('supplierClearBtn');
+
+            input.addEventListener('input', function () {
+                var term = this.value.trim();
+
+                if (searchTimeout) clearTimeout(searchTimeout);
+
+                if (term.length === 0) {
+                    resultsContainer.classList.remove('active');
+                    resultsContainer.innerHTML = '';
+                    clearBtn.style.display = 'none';
+                    return;
+                }
+
+                clearBtn.style.display = 'block';
+                searchTimeout = setTimeout(function () {
+                    performSupplierSearch(term);
+                }, 250);
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.supplier-search-wrapper')) {
+                    resultsContainer.classList.remove('active');
+                }
+            });
+        }
+
+        function performSupplierSearch(term) {
+            var resultsContainer = document.getElementById('supplierResults');
+            var termLower = term.toLowerCase();
+
+            var results = allSuppliers.filter(function (s) {
+                return s.name.toLowerCase().includes(termLower) ||
+                    (s.phone && s.phone.includes(term));
+            });
+
+            results.sort(function (a, b) {
+                var aStarts = a.name.toLowerCase().startsWith(termLower);
+                var bStarts = b.name.toLowerCase().startsWith(termLower);
+                if (aStarts && !bStarts) return -1;
+                if (!aStarts && bStarts) return 1;
+                return a.name.localeCompare(b.name);
+            });
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="search-empty">
+                        <i class="fas fa-search"></i>
+                        لا توجد نتائج لـ "<strong>${term}</strong>"
+                    </div>
+                `;
+                resultsContainer.classList.add('active');
+                return;
+            }
+
+            var html = '';
+            var maxResults = 20;
+
+            for (var i = 0; i < results.length && i < maxResults; i++) {
+                var s = results[i];
+                var balance = parseFloat(s.balance || 0);
+                var balanceClass = balance > 0 ? 'debt' : (balance < 0 ? 'credit' : 'zero');
+                var balanceText = balance > 0 ? 'مديونية: ' + balance.toFixed(2) + ' ج.م' :
+                    balance < 0 ? 'رصيد: ' + Math.abs(balance).toFixed(2) + ' ج.م' :
+                        'رصيد صفري';
+
+                var displayName = s.name;
+                var index = s.name.toLowerCase().indexOf(termLower);
+                if (index !== -1) {
+                    var before = s.name.substring(0, index);
+                    var match = s.name.substring(index, index + term.length);
+                    var after = s.name.substring(index + term.length);
+                    displayName = before + '<span class="highlight">' + match + '</span>' + after;
+                }
+
+                html += `
+                    <div class="supplier-result-item" onclick="selectSupplier('${s.name}')">
+                        <div>
+                            <div class="supplier-name">${displayName}</div>
+                            <div class="supplier-phone">
+                                <i class="fas fa-phone"></i> ${s.phone || 'لا يوجد هاتف'}
+                            </div>
+                        </div>
+                        <div class="supplier-balance ${balanceClass}">${balanceText}</div>
+                    </div>
+                `;
+            }
+
+            if (results.length > maxResults) {
+                html += `
+                    <div style="padding: 10px 20px; text-align: center; color: #6b7280; font-size: 12px; border-top: 1px solid #f3f4f6;">
+                        ... و ${results.length - maxResults} نتيجة أخرى
+                    </div>
+                `;
+            }
+
+            resultsContainer.innerHTML = html;
+            resultsContainer.classList.add('active');
+        }
+
+        function clearSupplierSearch() {
+            document.getElementById('supplierSearch').value = '';
+            document.getElementById('supplierResults').classList.remove('active');
+            document.getElementById('supplierResults').innerHTML = '';
+            document.getElementById('supplierClearBtn').style.display = 'none';
+            document.getElementById('supplierSearch').focus();
+        }
+
+        function selectSupplier(name) {
+            document.getElementById('supplierSearch').value = name;
+            document.getElementById('supplierResults').classList.remove('active');
+            document.getElementById('supplierResults').innerHTML = '';
+            document.getElementById('supplierClearBtn').style.display = 'none';
+            selectedSupplier = name;
+            showNotification('✅ تم اختيار المورد: ' + name, 'success');
+        }
+
+        // ================================================================
+        //  تعيين طريقة الدفع
+        // ================================================================
+        function setPaymentMethod(method) {
+            currentPaymentMethod = method;
+            isDeferred = (method === 'deferred');
+
+            var btns = document.querySelectorAll('.payment-options .payment-btn');
+            for (var i = 0; i < btns.length; i++) {
+                btns[i].classList.remove('active');
+            }
+            if (method === 'cash') {
+                document.querySelector('.payment-options .payment-btn.cash').classList.add('active');
+            } else {
+                document.querySelector('.payment-options .payment-btn.deferred').classList.add('active');
+            }
+
+            var paidRow = document.getElementById('paidRow');
+            var deferredRow = document.getElementById('deferredRow');
+            var checkoutBtn = document.getElementById('checkoutBtn');
+
+            if (method === 'deferred') {
+                paidRow.style.display = 'none';
+                deferredRow.style.display = 'flex';
+                checkoutBtn.className = 'checkout-btn deferred';
+                checkoutBtn.innerHTML = '<i class="fas fa-clock"></i> تسجيل فاتورة آجلة';
+                document.getElementById('remainingAmount').className = 'value debt';
+            } else {
+                paidRow.style.display = 'flex';
+                deferredRow.style.display = 'none';
+                checkoutBtn.className = 'checkout-btn cash';
+                checkoutBtn.innerHTML = '<i class="fas fa-check-circle"></i> إتمام الشراء';
+                document.getElementById('remainingAmount').className = 'value credit';
+            }
+
+            updatePaymentSummary();
+        }
+
+        // ================================================================
+        //  تحديث ملخص الدفع
+        // ================================================================
+        function updatePaymentSummary() {
+            var total = 0;
+            for (var i = 0; i < purchaseItems.length; i++) {
+                total += purchaseItems[i].total;
+            }
+
+            var paid = 0;
+            var downPayment = 0;
+
+            if (isDeferred) {
+                downPayment = parseFloat(document.getElementById('downPayment').value) || 0;
+                var remaining = total - downPayment;
+                document.getElementById('remainingAmount').textContent = remaining.toFixed(2) + ' ج.م';
+                if (remaining > 0) {
+                    document.getElementById('remainingAmount').className = 'value debt';
+                } else {
+                    document.getElementById('remainingAmount').className = 'value credit';
+                }
+            } else {
+                paid = parseFloat(document.getElementById('paidAmount').value) || 0;
+                var remaining = total - paid;
+                document.getElementById('remainingAmount').textContent = remaining.toFixed(2) + ' ج.م';
+                if (remaining > 0) {
+                    document.getElementById('remainingAmount').className = 'value debt';
+                } else {
+                    document.getElementById('remainingAmount').className = 'value credit';
+                }
+            }
+        }
+
+        // ================================================================
+        //  إضافة منتج بالكود
+        // ================================================================
+        async function addProductByCode() {
+            var code = document.getElementById('productCodeInput').value.trim();
+            if (!code) { showNotification('أدخل كود المنتج أولاً', 'error'); return; }
+
+            var product = null;
+            for (var i = 0; i < allProducts.length; i++) {
+                if (allProducts[i].code == code) { product = allProducts[i]; break; }
+            }
+            if (!product) { showNotification('لا يوجد منتج بالكود ' + code, 'error'); return; }
+
+            var qty = parseFloat(document.getElementById('customQty').value) || 1;
+            var locationId = parseInt(document.getElementById('locationSelect').value) || 1;
+            var price = parseFloat(product.purchasePrice || 0);
+
+            if (price <= 0) {
+                showNotification('سعر الشراء غير محدد لهذا المنتج', 'error');
+                return;
+            }
+
+            var existing = null;
+            for (var i = 0; i < purchaseItems.length; i++) {
+                if (purchaseItems[i].productId == product.id) { existing = purchaseItems[i]; break; }
+            }
+            if (existing) {
+                existing.quantity += qty;
+                existing.total = existing.quantity * existing.price;
+            } else {
+                purchaseItems.push({
+                    productId: product.id,
+                    productName: product.name,
+                    productCode: product.code,
+                    quantity: qty,
+                    price: price,
+                    total: price * qty,
+                    locationId: locationId
+                });
+            }
+
+            document.getElementById('productCodeInput').value = '';
+            document.getElementById('customQty').value = '1';
+            document.getElementById('productCodeInput').focus();
+
+            renderCart();
+            updateTotals();
+            updatePaymentSummary();
+            showNotification('تم إضافة ' + product.name, 'success');
+        }
+
+        // ================================================================
+        //  إضافة منتج للعربة
+        // ================================================================
+        function addToCart(productId, price, qty, locationId) {
+            var product = null;
+            for (var i = 0; i < allProducts.length; i++) {
+                if (allProducts[i].id == productId) { product = allProducts[i]; break; }
+            }
+            if (!product) return;
+
+            var locId = locationId || parseInt(document.getElementById('locationSelect').value) || 1;
+
+            var existing = null;
+            for (var i = 0; i < purchaseItems.length; i++) {
+                if (purchaseItems[i].productId == productId) { existing = purchaseItems[i]; break; }
+            }
+            if (existing) {
+                existing.quantity += qty;
+                existing.total = existing.quantity * existing.price;
+            } else {
+                purchaseItems.push({
+                    productId: product.id,
+                    productName: product.name,
+                    productCode: product.code,
+                    quantity: qty,
+                    price: price,
+                    total: price * qty,
+                    locationId: locId
+                });
+            }
+            renderCart();
+            updateTotals();
+            updatePaymentSummary();
+            showNotification('تم إضافة ' + product.name, 'success');
+        }
+
+        // ================================================================
+        //  عرض المنتجات السريعة
+        // ================================================================
+        async function renderQuickProducts() {
+            await fetchStock();
+            var html = '';
+            for (var i = 0; i < allProducts.length && i < 20; i++) {
+                var p = allProducts[i];
+                var qty = 0;
+                for (var j = 0; j < allStock.length; j++) {
+                    if (allStock[j].productId == p.id) qty += allStock[j].quantity;
+                }
+                var price = parseFloat(p.purchasePrice || 0);
+                var stockClass = qty <= (p.minStock || 5) ? 'low' : '';
+                html += '\n                <div class="product-item" onclick="prepareAddProduct(' + p.id + ', ' + price + ')">\n';
+                html += '                    <div class="product-code-badge">' + p.code + '</div>\n';
+                html += '                    <div class="product-name">' + p.name + '</div>\n';
+                html += '                    <div class="product-price">' + price.toLocaleString() + ' ج.م</div>\n';
+                html += '                    <div class="product-stock ' + stockClass + '">المخزون: ' + qty + '</div>\n';
+                html += '                </div>\n';
+            }
+            document.getElementById('quickProducts').innerHTML = html || '<div style="text-align:center; padding:30px;">لا توجد منتجات</div>';
+        }
+
+        function prepareAddProduct(id, price) {
+            document.getElementById('customQty').value = 1;
+            addToCart(id, price, 1);
+        }
+
+        // ================================================================
+        //  عرض العربة
+        // ================================================================
+        function renderCart() {
+            if (purchaseItems.length === 0) {
+                document.getElementById('cartItems').innerHTML = '\n                <div style="text-align: center; padding: 50px; color: #9ca3af;">\n                    <i class="fas fa-cart-shopping" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>\n                    <p>السلة فارغة</p>\n                </div>\n                ';
+                return;
+            }
+            var html = '';
+            for (var i = 0; i < purchaseItems.length; i++) {
+                var item = purchaseItems[i];
+                html += '\n                <div class="cart-row">\n                    <div class="cart-product-info">\n                        <div class="cart-product-name">' + item.productName + '</div>\n                        <div class="cart-product-code">كود: ' + item.productCode + '</div>\n                    </div>\n                    <div class="cart-qty-control">\n                        <button class="cart-qty-btn" onclick="updateQty(' + i + ', -1)">-</button>\n                        <span class="cart-qty-value">' + item.quantity + '</span>\n                        <button class="cart-qty-btn" onclick="updateQty(' + i + ', 1)">+</button>\n                    </div>\n                    <div class="cart-price">' + item.total.toLocaleString() + ' ج.م</div>\n                    <div class="cart-remove" onclick="removeFromCart(' + i + ')"><i class="fas fa-trash-alt"></i></div>\n                </div>\n                ';
+            }
+            document.getElementById('cartItems').innerHTML = html;
+        }
+
+        // ================================================================
+        //  تحديث الكمية
+        // ================================================================
+        function updateQty(index, delta) {
+            var newQty = purchaseItems[index].quantity + delta;
+            if (newQty < 1) { removeFromCart(index); return; }
+            purchaseItems[index].quantity = newQty;
+            purchaseItems[index].total = newQty * purchaseItems[index].price;
+            renderCart();
+            updateTotals();
+            updatePaymentSummary();
+        }
+
+        function removeFromCart(index) {
+            purchaseItems.splice(index, 1);
+            renderCart();
+            updateTotals();
+            updatePaymentSummary();
+        }
+
+        function clearCart() {
+            if (confirm('هل تريد مسح كل المنتجات؟')) {
+                purchaseItems = [];
+                renderCart();
+                updateTotals();
+                updatePaymentSummary();
+                document.getElementById('printBtn').style.display = 'none';
+                lastInvoiceData = null;
+                showNotification('تم مسح الفاتورة', 'success');
+            }
+        }
+
+        // ================================================================
+        //  تحديث الإجماليات
+        // ================================================================
+        function updateTotals() {
+            var subtotal = 0;
+            for (var i = 0; i < purchaseItems.length; i++) {
+                subtotal += purchaseItems[i].total;
+            }
+            document.getElementById('subtotal').innerHTML = subtotal.toLocaleString() + ' ج.م';
+            document.getElementById('grandTotal').innerHTML = subtotal.toLocaleString() + ' ج.م';
+        }
+
+        // ================================================================
+        //  إتمام الشراء
+        // ================================================================
+        async function checkout() {
+            if (purchaseItems.length === 0) {
+                showNotification('الفاتورة فارغة', 'error');
+                return;
+            }
+
+            var supplier = document.getElementById('supplierSearch').value.trim();
+            if (!supplier) {
+                showNotification('يرجى إدخال أو اختيار المورد', 'error');
+                return;
+            }
+
+            var subtotal = 0;
+            for (var i = 0; i < purchaseItems.length; i++) {
+                subtotal += purchaseItems[i].total;
+            }
+
+            var invoiceNumber = document.getElementById('invoiceNumberDisplay').value || getNextInvoiceNumber();
+            var date = document.getElementById('purchaseDate').value || new Date().toISOString().slice(0, 10);
+
+            var paid = 0;
+            var downPayment = 0;
+            var isDeferredMode = isDeferred;
+
+            if (isDeferredMode) {
+                downPayment = parseFloat(document.getElementById('downPayment').value) || 0;
+                paid = downPayment;
+                if (downPayment > subtotal) {
+                    showNotification('الدفعة المقدمة لا يمكن أن تتجاوز إجمالي الفاتورة', 'error');
+                    return;
+                }
+            } else {
+                paid = parseFloat(document.getElementById('paidAmount').value) || 0;
+                if (paid < subtotal) {
+                    showNotification('المبلغ المدفوع أقل من الإجمالي', 'error');
+                    return;
+                }
+            }
+
+            var invoice = {
+                invoiceNumber: invoiceNumber,
+                date: date,
+                supplier: supplier,
+                items: purchaseItems.map(function (item) {
+                    return {
+                        productId: item.productId,
+                        productName: item.productName,
+                        quantity: item.quantity,
+                        price: item.price,
+                        locationId: item.locationId || 1
+                    };
+                }),
+                total: subtotal,
+                paid: paid,
+                paymentMethod: isDeferredMode ? 'آجل' : 'كاش',
+                isDeferred: isDeferredMode,
+                downPayment: downPayment,
+                notes: isDeferredMode ? 'فاتورة آجلة - المتبقي: ' + (subtotal - paid).toFixed(2) + ' ج.م' : 'فاتورة كاش',
+                createdBy: currentUser ? currentUser.name : 'نظام'
+            };
+
+            showLoading(true);
+
+            try {
+                var result = await savePurchaseToAPI(invoice);
+
+                if (result.success) {
+                    var msg = isDeferredMode ?
+                        '✅ تم تسجيل فاتورة الشراء الآجلة! المتبقي: ' + (subtotal - paid).toFixed(2) + ' ج.م' :
+                        '✅ تم تسجيل فاتورة الشراء بنجاح';
+                    showNotification(msg, 'success');
+
+                    // حفظ بيانات الفاتورة للطباعة
+                    lastInvoiceData = invoice;
+                    lastInvoiceNumber = invoiceNumber;
+                    document.getElementById('printBtn').style.display = 'block';
+
+                    // تنظيف السلة
+                    purchaseItems = [];
+                    renderCart();
+                    updateTotals();
+                    updatePaymentSummary();
+                    renderQuickProducts();
+                    loadRecentPurchases();
+
+                    // توليد رقم فاتورة جديد
+                    displayInvoiceNumber();
+
+                    // تنظيف حقل المورد
+                    document.getElementById('supplierSearch').value = '';
+                    document.getElementById('supplierResults').classList.remove('active');
+                    document.getElementById('supplierResults').innerHTML = '';
+                    document.getElementById('supplierClearBtn').style.display = 'none';
+                    selectedSupplier = null;
+
+                    // تنظيف حقول الدفع
+                    document.getElementById('paidAmount').value = '';
+                    document.getElementById('downPayment').value = '0';
+                    document.getElementById('remainingAmount').textContent = '0.00 ج.م';
+
+                } else {
+                    showNotification(result.message || 'حدث خطأ في حفظ الفاتورة', 'error');
+                }
+            } catch (error) {
+                console.error('Checkout error:', error);
+                showNotification('حدث خطأ في الاتصال بالسيرفر', 'error');
+            }
+
+            showLoading(false);
+        }
+
+        // ================================================================
+        //  طباعة الفاتورة
+        // ================================================================
+        function printInvoice(inv) {
+            var w = window.open('', '_blank', 'width=800,height=600');
+            if (!w) {
+                showNotification('⚠️ الرجاء السماح للنوافذ المنبثقة', 'error');
+                return;
+            }
+
+            var total = inv.total || 0;
+            var paid = inv.paid || 0;
+            var remaining = total - paid;
+            var isDeferredInvoice = inv.isDeferred || false;
+
+            w.document.write(`<!DOCTYPE html>
+        <html dir="rtl" lang="ar">
+        <head>
+            <meta charset="UTF-8">
+            <title>فاتورة شراء ${inv.invoiceNumber}</title>
+            <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { font-family: 'Cairo', sans-serif; background: #f3f4f6; padding: 20px; display: flex; justify-content: center; }
+                .invoice { width: 65mm; background: white; padding: 4mm; font-size: 9px; line-height: 1.3; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+                .invoice-header { text-align: center; border-bottom: 2px solid ${isDeferredInvoice ? '#f59e0b' : '#10b981'}; padding-bottom: 6px; margin-bottom: 8px; background: linear-gradient(to bottom, #f9f9f9, white); }
+                .store-name { font-size: 15px; font-weight: 800; margin-bottom: 3px; color: #3d2817; letter-spacing: 0.5px; }
+                .store-tagline { font-size: 8px; color: ${isDeferredInvoice ? '#f59e0b' : '#10b981'}; font-weight: 600; margin-bottom: 4px; border-top: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 2px 0; }
+                .store-info { font-size: 8px; color: #555; margin-bottom: 1px; line-height: 1.3; }
+                .divider { border-bottom: 1px dashed #ccc; margin: 6px 0; }
+                .divider-solid { border-bottom: 2px solid ${isDeferredInvoice ? '#f59e0b' : '#10b981'}; margin: 6px 0; }
+                .decorative-line { text-align: center; margin: 4px 0; color: ${isDeferredInvoice ? '#f59e0b' : '#10b981'}; font-size: 10px; }
+                .invoice-info { display: flex; justify-content: space-between; margin-bottom: 6px; padding: 4px; background: #fafafa; border-radius: 3px; font-size: 8px; flex-wrap: wrap; }
+                .invoice-info-item { display: flex; flex-direction: column; }
+                .invoice-info-label { color: #888; font-size: 7px; margin-bottom: 1px; }
+                .invoice-info-value { font-weight: 700; color: #1f2937; font-size: 9px; }
+                .items-section-title { background: ${isDeferredInvoice ? '#f59e0b' : '#10b981'}; color: white; padding: 3px; text-align: center; font-size: 9px; font-weight: 700; margin: 6px 0 4px 0; border-radius: 2px; }
+                .items-table { width: 100%; margin-bottom: 6px; border-collapse: collapse; }
+                .items-table th { background: #f5f5f5; padding: 3px 2px; text-align: center; font-size: 8px; font-weight: 700; border-bottom: 1px solid #ddd; color: #3d2817; }
+                .items-table td { padding: 3px 2px; text-align: center; font-size: 8px; border-bottom: 1px dotted #e5e7eb; }
+                .items-table tr:last-child td { border-bottom: none; }
+                .item-name { text-align: right !important; font-weight: 600; color: #1f2937; }
+                .totals { padding-top: 6px; border-top: 2px solid ${isDeferredInvoice ? '#f59e0b' : '#10b981'}; margin-bottom: 6px; background: #fafafa; padding: 6px 4px; border-radius: 3px; }
+                .total-row { display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 9px; padding: 2px 0; }
+                .total-label { color: #555; font-weight: 500; }
+                .total-value { font-weight: 700; color: #1f2937; }
+                .grand-total { background: linear-gradient(135deg, ${isDeferredInvoice ? '#f59e0b' : '#10b981'}, ${isDeferredInvoice ? '#d97706' : '#059669'}); color: white; padding: 6px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; margin-top: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+                .grand-total-label { font-size: 11px; font-weight: 800; }
+                .grand-total-value { font-size: 13px; font-weight: 900; letter-spacing: 0.5px; }
+                .payment-section { margin-top: 6px; padding: 5px; background: ${isDeferredInvoice ? '#fef3c7' : '#f0f9ff'}; border: 1px solid ${isDeferredInvoice ? '#f59e0b' : '#bae6fd'}; border-radius: 3px; }
+                .payment-info { display: flex; justify-content: space-between; font-size: 8px; margin-bottom: 3px; flex-wrap: wrap; }
+                .payment-info-item { display: flex; flex-direction: column; align-items: center; }
+                .payment-label { color: ${isDeferredInvoice ? '#92400e' : '#0284c7'}; font-size: 7px; font-weight: 600; margin-bottom: 1px; }
+                .payment-value { font-weight: 800; color: #1f2937; font-size: 9px; }
+                .payment-value.remaining { color: #d97706; }
+                .deferred-badge { background: #f59e0b; color: white; padding: 2px 10px; border-radius: 20px; font-size: 8px; font-weight: 700; display: inline-block; }
+                .invoice-footer { text-align: center; padding-top: 6px; border-top: 2px solid ${isDeferredInvoice ? '#f59e0b' : '#10b981'}; margin-top: 6px; }
+                .thank-you { font-size: 10px; font-weight: 800; margin-bottom: 4px; color: ${isDeferredInvoice ? '#f59e0b' : '#10b981'}; }
+                .footer-text { font-size: 7px; color: #888; margin-bottom: 2px; line-height: 1.4; }
+                @media print { body { background: white; padding: 0; } .invoice { box-shadow: none; margin: 0; } @page { margin: 0; size: 65mm auto; } }
+            </style>
+        </head>
+        <body>
+            <div class="invoice">
+                <div class="invoice-header">
+                    <div class="store-name">🌿 عطارة الصالح</div>
+                    <div class="decorative-line">═══════════════════</div>
+                    <div class="store-tagline">✦ أجود أنواع البهارات والعطارة ✦</div>
+                    <div class="store-info">📍 العاشر من رمضان - محافظة الشرقية</div>
+                    <div class="store-info">📞 01062080201 | 📱 01014569475</div>
+                </div>
+                <div class="divider"></div>
+                <div class="invoice-info">
+                    <div class="invoice-info-item">
+                        <span class="invoice-info-label">رقم الفاتورة</span>
+                        <span class="invoice-info-value">${inv.invoiceNumber}</span>
+                    </div>
+                    <div class="invoice-info-item" style="text-align: left;">
+                        <span class="invoice-info-label">التاريخ والوقت</span>
+                        <span class="invoice-info-value">${new Date().toLocaleDateString('ar-EG')} - ${new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                </div>
+                <div class="invoice-info" style="margin-top: 4px;">
+                    <div class="invoice-info-item">
+                        <span class="invoice-info-label">🏢 المورد</span>
+                        <span class="invoice-info-value">${inv.supplier || 'غير محدد'}</span>
+                    </div>
+                    <div class="invoice-info-item" style="text-align: left;">
+                        <span class="invoice-info-label">👨‍💼 الموظف</span>
+                        <span class="invoice-info-value">${inv.createdBy || 'نظام'}</span>
+                    </div>
+                </div>
+                ${isDeferredInvoice ? `
+                <div class="divider-solid"></div>
+                <div style="text-align: center; padding: 4px; background: #fef3c7; border-radius: 4px; margin: 4px 0;">
+                    <span class="deferred-badge">📋 فاتورة آجلة</span>
+                </div>
+                ` : ''}
+                <div class="divider-solid"></div>
+                <div class="items-section-title">📦 تفاصيل المشتريات</div>
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 43%;">الصنف</th>
+                            <th style="width: 12%;">الكمية</th>
+                            <th style="width: 20%;">السعر</th>
+                            <th style="width: 25%;">الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody>`);
+
+            for (var i = 0; i < inv.items.length; i++) {
+                var item = inv.items[i];
+                w.document.write(`
+                            <tr>
+                                <td class="item-name">${item.productName}</td>
+                                <td>${item.quantity}</td>
+                                <td>${item.price.toFixed(2)}</td>
+                                <td><strong>${(item.quantity * item.price).toFixed(2)}</strong></td>
+                            </tr>
+                        `);
+            }
+
+            w.document.write(`
+                    </tbody>
+                </table>
+                <div class="divider-solid"></div>
+                <div class="totals">
+                    <div class="total-row">
+                        <span class="total-label">📊 المجموع:</span>
+                        <span class="total-value">${inv.total.toFixed(2)} ج.م</span>
+                    </div>
+                </div>
+                <div class="grand-total">
+                    <span class="grand-total-label">💵 المبلغ النهائي</span>
+                    <span class="grand-total-value">${inv.total.toFixed(2)} ج.م</span>
+                </div>
+                <div class="payment-section">
+                    <div class="payment-info">
+                        <div class="payment-info-item">
+                            <span class="payment-label">💳 طريقة الدفع</span>
+                            <span class="payment-value">${inv.paymentMethod || 'كاش'}</span>
+                        </div>
+                        <div class="payment-info-item">
+                            <span class="payment-label">✅ المدفوع</span>
+                            <span class="payment-value">${(inv.paid || 0).toFixed(2)} ج.م</span>
+                        </div>
+                        ${isDeferredInvoice ? `
+                        <div class="payment-info-item">
+                            <span class="payment-label">📋 المتبقي</span>
+                            <span class="payment-value remaining">${(inv.total - (inv.paid || 0)).toFixed(2)} ج.م</span>
+                        </div>
+                        ` : `
+                        <div class="payment-info-item">
+                            <span class="payment-label">💵 الباقي</span>
+                            <span class="payment-value">${((inv.paid || 0) - inv.total).toFixed(2)} ج.م</span>
+                        </div>
+                        `}
+                    </div>
+                    ${isDeferredInvoice ? `
+                    <div style="text-align: center; padding: 4px; font-size: 7px; color: #92400e; border-top: 1px dashed #f59e0b; margin-top: 4px; padding-top: 4px;">
+                        ⏳ هذا المبلغ متبقي على المورد
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="divider"></div>
+                <div class="invoice-footer">
+                    <div class="thank-you">🙏 شكراً لحسن تعاملكم</div>
+                    <div class="footer-text">نتمنى لكم طيب الإقامة</div>
+                    <div class="footer-text" style="font-size: 6px; color: #aaa; margin-top: 4px;">
+                        تم الإنشاء بواسطة نظام عطارة الصالح
+                    </div>
+                </div>
+            </div>
+            <script>
+                window.onload = function() {
+                    window.print();
+                    setTimeout(function() { window.close(); }, 1000);
+                };
+            <\/script>
+        </body>
+        </html>`);
+            w.document.close();
+        }
+
+        function printLastInvoice() {
+            if (lastInvoiceData) {
+                printInvoice(lastInvoiceData);
+            } else {
+                showNotification('لا توجد فاتورة للطباعة', 'error');
+            }
+        }
+
+        // ================================================================
+        //  تحميل الفواتير الأخيرة
+        // ================================================================
+        async function loadRecentPurchases() {
+            await fetchPurchases();
+            var recent = [];
+            for (var i = allPurchases.length - 1; i >= 0 && i >= allPurchases.length - 10; i--) {
+                recent.push(allPurchases[i]);
+            }
+            var html = '';
+            for (var i = 0; i < recent.length; i++) {
+                var isDeferredInv = recent[i].is_deferred || false;
+                var cls = isDeferredInv ? 'invoice-chip deferred' : 'invoice-chip';
+                html += '<button class="' + cls + '" onclick="viewPurchase(\'' + recent[i].invoiceNumber + '\')">';
+                html += '    <i class="fas fa-file-invoice"></i> ' + recent[i].invoiceNumber;
+                html += isDeferredInv ? ' 📋' : '';
+                html += '</button>';
+            }
+            document.getElementById('recentInvoices').innerHTML = html || '<span style="color:#6b7280;">لا توجد فواتير سابقة</span>';
+        }
+
+        async function viewPurchase(invoiceNumber) {
+            try {
+                var response = await fetch(API_URL + '/purchases/' + invoiceNumber);
+                var result = await response.json();
+                if (result.success) {
+                    printInvoice(result.data);
+                } else {
+                    showNotification('لم يتم العثور على الفاتورة', 'error');
+                }
+            } catch (e) {
+                console.error('Error viewing purchase:', e);
+                showNotification('حدث خطأ في جلب الفاتورة', 'error');
+            }
+        }
+
+        // ================================================================
+        //  Sidebar
+        // ================================================================
+        function initSidebar() {
+            var toggle = document.getElementById('menuToggle');
+            var closeSidebar = document.getElementById('closeSidebar');
+            var sidebar = document.getElementById('sidebar');
+
+            if (toggle) {
+                toggle.onclick = function () {
+                    if (sidebar) sidebar.classList.add('open');
+                };
+            }
+            if (closeSidebar) {
+                closeSidebar.onclick = function () {
+                    if (sidebar) sidebar.classList.remove('open');
+                };
+            }
+            document.addEventListener('click', function (e) {
+                if (window.innerWidth <= 992 && sidebar && !sidebar.contains(e.target) &&
+                    toggle && !toggle.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            });
+        }
+
+        function logout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // ================================================================
+        //  التهيئة
+        // ================================================================
+        async function init() {
+            initSidebar();
+
+            currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'storekeeper')) {
+                if (currentUser && currentUser.role === 'cashier') {
+                    window.location.href = 'pos.html';
+                } else {
+                    window.location.href = 'login.html';
+                }
+                return;
+            }
+            
+            // تحديث الصورة والاسم
+            updateTopBarAvatar();
+
+            showLoading(true);
+
+            // تحميل جميع البيانات
+            await fetchProducts();
+            await fetchStock();
+            await fetchSuppliers();
+            await fetchLocations();
+            await fetchPurchases();
+
+            // تحميل القوائم
+            await loadLocations();
+
+            // عرض المنتجات
+            await renderQuickProducts();
+
+            // تحميل الفواتير الأخيرة
+            await loadRecentPurchases();
+
+            // توليد رقم الفاتورة
+            displayInvoiceNumber();
+
+            // تعيين التاريخ
+            document.getElementById('purchaseDate').value = new Date().toISOString().slice(0, 10);
+
+            // إعداد البحث عن الموردين
+            setupSupplierSearch();
+
+            // إضافة مستمعين لتحديث ملخص الدفع
+            document.getElementById('paidAmount').addEventListener('input', updatePaymentSummary);
+            document.getElementById('downPayment').addEventListener('input', updatePaymentSummary);
+
+            // تعيين طريقة الدفع الافتراضية
+            setPaymentMethod('cash');
+
+            // أحداث
+            document.getElementById('searchInput').addEventListener('input', async function (e) {
+                var term = e.target.value.toLowerCase();
+                if (!term) { await renderQuickProducts(); return; }
+                var filtered = [];
+                for (var i = 0; i < allProducts.length; i++) {
+                    var p = allProducts[i];
+                    if (p.name.toLowerCase().includes(term) || p.code.toLowerCase().includes(term)) {
+                        filtered.push(p);
+                    }
+                }
+                await fetchStock();
+                var html = '';
+                for (var i = 0; i < filtered.length && i < 20; i++) {
+                    var p = filtered[i];
+                    var qty = 0;
+                    for (var j = 0; j < allStock.length; j++) {
+                        if (allStock[j].productId == p.id) qty += allStock[j].quantity;
+                    }
+                    var price = parseFloat(p.purchasePrice || 0);
+                    html += '\n                        <div class="product-item" onclick="prepareAddProduct(' + p.id + ', ' + price + ')">\n';
+                    html += '                            <div class="product-code-badge">' + p.code + '</div>\n';
+                    html += '                            <div class="product-name">' + p.name + '</div>\n';
+                    html += '                            <div class="product-price">' + price.toLocaleString() + ' ج.م</div>\n';
+                    html += '                            <div class="product-stock">المخزون: ' + qty + '</div>\n';
+                    html += '                        </div>\n';
+                }
+                document.getElementById('quickProducts').innerHTML = html || '<div style="padding:30px; text-align:center;">لا توجد نتائج</div>';
+            });
+
+            // Enter على حقل الكود
+            document.getElementById('productCodeInput').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addProductByCode();
+                }
+            });
+
+            // Enter على حقل بحث المورد
+            document.getElementById('supplierSearch').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    var val = this.value.trim();
+                    if (val) {
+                        selectSupplier(val);
+                    }
+                }
+            });
+
+            showLoading(false);
+            document.getElementById('productCodeInput').focus();
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

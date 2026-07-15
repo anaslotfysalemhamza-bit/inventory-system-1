@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الملف الشخصي - نظام إدارة المخازن</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ============================================================
+           🎨 تصميم احترافي لصفحة الملف الشخصي - بنفس ألوان الموقع
+           ============================================================ */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ====== خلفية متحركة ====== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(76, 201, 240, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 50% 20%, rgba(118, 75, 162, 0.05) 0%, transparent 50%);
+            z-index: 0;
+            animation: bgFloat 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgFloat {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+            100% {
+                transform: scale(1.03) rotate(1deg);
+            }
+        }
+
+        /* ====== كرات متحركة في الخلفية ====== */
+        .bg-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+            animation: blobFloat 25s ease-in-out infinite alternate;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: #667eea;
+            top: -200px;
+            right: -200px;
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: #764ba2;
+            bottom: -150px;
+            left: -150px;
+            animation-delay: -8s;
+        }
+
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            background: #4cc9f0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -15s;
+            opacity: 0.15;
+        }
+
+        @keyframes blobFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(40px, -40px) scale(1.1);
+            }
+            66% {
+                transform: translate(-30px, 30px) scale(0.9);
+            }
+            100% {
+                transform: translate(20px, -20px) scale(1.05);
+            }
+        }
+
+        /* ====== الحاوية الرئيسية ====== */
+        .container {
+            padding: 30px;
+            margin: 0 auto;
+            max-width: 1400px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ====== الهيدر ====== */
+        .page-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 25px 35px;
+            border-radius: 24px;
+            margin-bottom: 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeInDown 0.6s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-title i {
+            color: #4361ee;
+            font-size: 30px;
+            animation: iconPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        .btn-back {
+            background: #f3f4f6;
+            border: none;
+            color: #1f2937;
+            padding: 12px 24px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ====== الـ Grid ====== */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 30px;
+            animation: fadeInUp 0.6s ease 0.1s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ====== البطاقة اليسرى ====== */
+        .profile-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(67, 97, 238, 0.03), transparent 60%);
+            animation: cardShine 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes cardShine {
+            0% {
+                transform: translate(-10%, -10%) rotate(0deg);
+            }
+            100% {
+                transform: translate(10%, 10%) rotate(5deg);
+            }
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(67, 97, 238, 0.2);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ====== صورة الملف الشخصي ====== */
+        .profile-picture-section {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-picture-wrapper {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 25px;
+        }
+
+        /* حلقة متوهجة حول الصورة */
+        .profile-picture-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #4361ee, #667eea, #764ba2, #4361ee);
+            animation: rotateGlow 4s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotateGlow {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .profile-picture-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: white;
+            z-index: -1;
+        }
+
+        .profile-picture {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 8px 40px rgba(67, 97, 238, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-picture:hover {
+            transform: scale(1.03);
+            border-color: #4361ee;
+        }
+
+        .profile-picture-placeholder {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 72px;
+            color: white;
+            font-weight: 800;
+            border: 4px solid white;
+            box-shadow: 0 8px 40px rgba(67, 97, 238, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-picture-placeholder:hover {
+            transform: scale(1.03);
+        }
+
+        /* زر الكاميرا */
+        .profile-picture-overlay {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.4);
+            border: 2px solid white;
+            z-index: 2;
+        }
+
+        .profile-picture-overlay:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 8px 30px rgba(67, 97, 238, 0.6);
+        }
+
+        .profile-picture-overlay i {
+            color: white;
+            font-size: 20px;
+        }
+
+        .upload-input {
+            display: none;
+        }
+
+        /* زر حذف الصورة */
+        .delete-picture-btn {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .delete-picture-btn:hover {
+            background: #fecaca;
+            transform: translateY(-2px);
+        }
+
+        /* ====== اسم المستخدم ====== */
+        .profile-name {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ====== الـ Role Badge ====== */
+        .profile-role {
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+            animation: rolePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes rolePulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        .role-admin {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(245, 87, 108, 0.3);
+        }
+
+        .role-storekeeper {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .role-cashier {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: #1a2a3a;
+            box-shadow: 0 4px 20px rgba(67, 233, 123, 0.3);
+        }
+
+        /* ====== الحالة ====== */
+        .profile-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: 30px;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-active .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            display: inline-block;
+            animation: dotPulse 2s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        @keyframes dotPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.6;
+            }
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* ====== الإحصائيات ====== */
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-card {
+            background: #f9fafb;
+            padding: 18px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+            transition: all 0.4s ease;
+        }
+
+        .stat-card:hover {
+            background: #f3f4f6;
+            transform: translateY(-3px);
+            border-color: #4361ee;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #4361ee;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        /* ====== البطاقة اليمنى ====== */
+        .profile-card-right {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card-right::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 70% 30%, rgba(118, 75, 162, 0.03), transparent 60%);
+            animation: cardShineRight 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes cardShineRight {
+            0% {
+                transform: translate(10%, -10%) rotate(0deg);
+            }
+            100% {
+                transform: translate(-10%, 10%) rotate(-5deg);
+            }
+        }
+
+        .profile-card-right:hover {
+            transform: translateY(-5px);
+            border-color: rgba(67, 97, 238, 0.2);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ====== أقسام المعلومات ====== */
+        .info-section {
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: #4361ee;
+            font-size: 20px;
+            width: 40px;
+            height: 40px;
+            background: #e0e7ff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ====== الحقول ====== */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-label i {
+            margin-left: 6px;
+            color: #4361ee;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+            color: #1f2937;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-input:disabled {
+            background: #f3f4f6;
+            cursor: not-allowed;
+        }
+
+        /* ====== الأزرار ====== */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #1f2937;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            transform: translateY(-3px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(239, 68, 68, 0.4);
+        }
+
+        /* ====== قسم كلمة المرور ====== */
+        .password-section {
+            background: #f9fafb;
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ====== التنبيهات ====== */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            animation: slideInAlert 0.4s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes slideInAlert {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* ====== الإجراءات السريعة ====== */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        /* ====== الخط الفاصل ====== */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, #e5e7eb, #d1d5db, #e5e7eb);
+            margin: 25px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================================
+           📱 استجابة للموبايل
+           ============================================================ */
+
+        @media (max-width: 992px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .page-header {
+                padding: 18px 20px;
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .page-title {
+                font-size: 22px;
+            }
+            
+            .profile-card,
+            .profile-card-right {
+                padding: 25px;
+            }
+            
+            .profile-picture-wrapper {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .profile-picture {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .profile-picture-placeholder {
+                width: 150px;
+                height: 150px;
+                font-size: 60px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn-group .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+            }
+            
+            .profile-picture-wrapper {
+                width: 130px;
+                height: 130px;
+            }
+            
+            .profile-picture {
+                width: 130px;
+                height: 130px;
+            }
+            
+            .profile-picture-placeholder {
+                width: 130px;
+                height: 130px;
+                font-size: 50px;
+            }
+            
+            .profile-picture-overlay {
+                width: 40px;
+                height: 40px;
+                bottom: 4px;
+                right: 4px;
+            }
+            
+            .profile-picture-overlay i {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ====== كرات الخلفية ====== -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <!-- ====== المحتوى الرئيسي ====== -->
+    <div class="container">
+        <div class="profile-container">
+
+            <!-- ====== الهيدر ====== -->
+            <div class="page-header">
+                <div class="page-title">
+                    <i class="fas fa-user-circle"></i>
+                    الملف الشخصي
+                </div>
+                <button class="btn-back" onclick="window.history.back()">
+                    <i class="fas fa-arrow-right"></i>
+                    رجوع
+                </button>
+            </div>
+
+            <!-- ====== الـ Grid ====== -->
+            <div class="profile-grid">
+
+                <!-- ====== البطاقة اليسرى ====== -->
+                <div class="profile-card">
+                    <div class="profile-picture-section">
+                        <div class="profile-picture-wrapper">
+                            <img id="profilePicture" class="profile-picture" style="display: none;">
+                            <div id="profilePlaceholder" class="profile-picture-placeholder">أ</div>
+                            <div class="profile-picture-overlay" onclick="document.getElementById('uploadInput').click()">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                            <input type="file" id="uploadInput" class="upload-input" accept="image/*" onchange="uploadProfilePicture()">
+                        </div>
+                        <button id="deletePictureBtn" class="delete-picture-btn" style="display: none;" onclick="deleteProfilePicture()">
+                            <i class="fas fa-trash"></i> حذف الصورة
+                        </button>
+                    </div>
+
+                    <div class="profile-name" id="profileName">---</div>
+                    <div id="profileRoleBadge" class="profile-role role-admin">مدير</div>
+                    <div id="profileStatus" class="profile-status status-active">
+                        <span class="status-dot"></span>
+                        حساب نشط
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="profile-stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="statActions">0</div>
+                            <div class="stat-label">عدد العمليات</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="statDays">0</div>
+                            <div class="stat-label">أيام منذ التسجيل</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ====== البطاقة اليمنى ====== -->
+                <div class="profile-card-right">
+                    <div id="alertContainer"></div>
+
+                    <!-- ====== المعلومات الشخصية ====== -->
+                    <div class="info-section">
+                        <div class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            المعلومات الشخصية
+                        </div>
+                        <form id="profileForm">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-user"></i> الاسم الكامل
+                                </label>
+                                <input type="text" id="userName" class="form-input" placeholder="أدخل اسمك الكامل">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-envelope"></i> البريد الإلكتروني
+                                </label>
+                                <input type="email" id="userEmail" class="form-input" placeholder="example@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-phone"></i> رقم الهاتف
+                                </label>
+                                <input type="tel" id="userPhone" class="form-input" placeholder="01012345678">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-map-marker-alt"></i> العنوان
+                                </label>
+                                <input type="text" id="userAddress" class="form-input" placeholder="العنوان التفصيلي">
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> حفظ التغييرات
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="loadUserData()">
+                                    <i class="fas fa-undo"></i> إلغاء
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- ====== تغيير كلمة المرور ====== -->
+                    <div class="info-section">
+                        <div class="section-title">
+                            <i class="fas fa-lock"></i>
+                            تغيير كلمة المرور
+                        </div>
+                        <div class="password-section">
+                            <form id="passwordForm">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-key"></i> كلمة المرور الحالية
+                                    </label>
+                                    <input type="password" id="oldPassword" class="form-input" placeholder="أدخل كلمة المرور الحالية">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-key"></i> كلمة المرور الجديدة
+                                    </label>
+                                    <input type="password" id="newPassword" class="form-input" placeholder="أدخل كلمة المرور الجديدة">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-key"></i> تأكيد كلمة المرور الجديدة
+                                    </label>
+                                    <input type="password" id="confirmPassword" class="form-input" placeholder="أعد إدخال كلمة المرور">
+                                </div>
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-lock"></i> تغيير كلمة المرور
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- ====== إجراءات سريعة ====== -->
+                    <div class="info-section">
+                        <div class="section-title">
+                            <i class="fas fa-bolt"></i>
+                            إجراءات سريعة
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary" onclick="window.location.href='activity-log.html'">
+                                <i class="fas fa-history"></i> سجل الحركات
+                            </button>
+                            <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">
+                                <i class="fas fa-home"></i> لوحة التحكم
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== استخدام API_URL ==========
+        var API_URL = window.API_URL || 'http://localhost:5000/api';
+        var currentUser = null;
+
+        // ========== تحميل بيانات المستخدم ==========
+        async function loadUserData() {
+            var user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            if (!user || !user.id) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            currentUser = user;
+
+            try {
+                var response = await fetch(API_URL + '/user/' + user.id);
+                var data = await response.json();
+
+                if (data.success) {
+                    var userData = data.data;
+
+                    document.getElementById('userName').value = userData.name || '';
+                    document.getElementById('userEmail').value = userData.email || '';
+                    document.getElementById('userPhone').value = userData.phone || '';
+                    document.getElementById('userAddress').value = userData.address || '';
+                    document.getElementById('profileName').textContent = userData.name;
+
+                    // حفظ الصورة في localStorage
+                    if (userData.profile_picture) {
+                        var imageUrl = userData.profile_picture;
+                        if (!imageUrl.startsWith('http') && !imageUrl.startsWith('/uploads')) {
+                            imageUrl = API_URL.replace('/api', '') + imageUrl;
+                        }
+                        localStorage.setItem('user_profile_picture_' + user.id, imageUrl);
+                    } else {
+                        localStorage.removeItem('user_profile_picture_' + user.id);
+                    }
+
+                    // تحديث الصورة
+                    if (userData.profile_picture) {
+                        document.getElementById('profilePicture').src = userData.profile_picture;
+                        document.getElementById('profilePicture').style.display = 'block';
+                        document.getElementById('profilePlaceholder').style.display = 'none';
+                        document.getElementById('deletePictureBtn').style.display = 'inline-flex';
+                    } else {
+                        document.getElementById('profilePlaceholder').textContent = userData.name.charAt(0).toUpperCase();
+                        document.getElementById('profilePicture').style.display = 'none';
+                        document.getElementById('profilePlaceholder').style.display = 'flex';
+                        document.getElementById('deletePictureBtn').style.display = 'none';
+                    }
+
+                    // تحديث الدور
+                    var roleBadge = document.getElementById('profileRoleBadge');
+                    var roleText = {
+                        'admin': 'مدير',
+                        'storekeeper': 'أمين مخزن',
+                        'cashier': 'كاشير'
+                    };
+                    roleBadge.textContent = roleText[userData.role] || userData.role;
+                    roleBadge.className = 'profile-role role-' + userData.role;
+
+                    // تحديث الحالة
+                    var statusDiv = document.getElementById('profileStatus');
+                    if (userData.account_status === 'active') {
+                        statusDiv.className = 'profile-status status-active';
+                        statusDiv.innerHTML = '<span class="status-dot"></span> حساب نشط';
+                    } else {
+                        statusDiv.className = 'profile-status status-pending';
+                        statusDiv.innerHTML = '<i class="fas fa-clock"></i> في انتظار الموافقة';
+                    }
+
+                    // حساب عدد الأيام
+                    var createdDate = new Date(userData.created_at);
+                    var today = new Date();
+                    var days = Math.floor((today - createdDate) / (1000 * 60 * 60 * 24));
+                    document.getElementById('statDays').textContent = days;
+
+                    // جلب عدد العمليات
+                    loadActivityStats();
+
+                    // تحديث الـ Sidebar
+                    if (typeof renderSidebar === 'function') {
+                        renderSidebar();
+                    }
+                    if (typeof updateTopBarAvatar === 'function') {
+                        updateTopBarAvatar();
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showAlert('حدث خطأ في تحميل البيانات', 'error');
+            }
+        }
+
+        // ========== تحميل إحصائيات النشاط ==========
+        async function loadActivityStats() {
+            try {
+                var response = await fetch(API_URL + '/user-activity/' + currentUser.id);
+                var data = await response.json();
+                if (data.success) {
+                    document.getElementById('statActions').textContent = data.data.length;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // ========== حفظ التغييرات ==========
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            var name = document.getElementById('userName').value.trim();
+            var email = document.getElementById('userEmail').value.trim();
+            var phone = document.getElementById('userPhone').value.trim();
+            var address = document.getElementById('userAddress').value.trim();
+
+            if (!name || !email) {
+                showAlert('الاسم والبريد الإلكتروني مطلوبان', 'error');
+                return;
+            }
+
+            try {
+                var response = await fetch(API_URL + '/user/' + currentUser.id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name, email: email, phone: phone, address: address })
+                });
+
+                var data = await response.json();
+
+                if (data.success) {
+                    showAlert('تم حفظ التغييرات بنجاح', 'success');
+
+                    currentUser.name = name;
+                    currentUser.email = email;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+                    loadUserData();
+                } else {
+                    showAlert(data.message || 'فشل في حفظ التغييرات', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving profile:', error);
+                showAlert('حدث خطأ في حفظ البيانات', 'error');
+            }
+        });
+
+        // ========== تغيير كلمة المرور ==========
+        document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            var oldPassword = document.getElementById('oldPassword').value;
+            var newPassword = document.getElementById('newPassword').value;
+            var confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!oldPassword || !newPassword || !confirmPassword) {
+                showAlert('جميع الحقول مطلوبة', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showAlert('كلمة المرور الجديدة غير متطابقة', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showAlert('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                return;
+            }
+
+            try {
+                var response = await fetch(API_URL + '/user/' + currentUser.id + '/password', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ oldPassword: oldPassword, newPassword: newPassword })
+                });
+
+                var data = await response.json();
+
+                if (data.success) {
+                    showAlert('تم تغيير كلمة المرور بنجاح', 'success');
+                    document.getElementById('passwordForm').reset();
+                } else {
+                    showAlert(data.message || 'فشل في تغيير كلمة المرور', 'error');
+                }
+            } catch (error) {
+                console.error('Error changing password:', error);
+                showAlert('حدث خطأ في تغيير كلمة المرور', 'error');
+            }
+        });
+
+        // ========== رفع صورة شخصية ==========
+        async function uploadProfilePicture() {
+            var fileInput = document.getElementById('uploadInput');
+            var file = fileInput.files[0];
+
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showAlert('يجب اختيار صورة فقط', 'error');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showAlert('حجم الصورة يجب أن يكون أقل من 5MB', 'error');
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('profilePicture', file);
+
+            try {
+                showAlert('جاري رفع الصورة...', 'info');
+
+                var response = await fetch(API_URL + '/upload-profile-picture/' + currentUser.id, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                var data = await response.json();
+
+                if (data.success) {
+                    var imageUrl = data.data.filePath || data.imageUrl || URL.createObjectURL(file);
+                    if (!imageUrl.startsWith('http') && !imageUrl.startsWith('/uploads')) {
+                        imageUrl = API_URL.replace('/api', '') + imageUrl;
+                    }
+                    localStorage.setItem('user_profile_picture_' + currentUser.id, imageUrl);
+                    
+                    showAlert('تم رفع الصورة بنجاح', 'success');
+                    loadUserData();
+                    
+                    if (typeof renderSidebar === 'function') {
+                        renderSidebar();
+                    }
+                    if (typeof updateTopBarAvatar === 'function') {
+                        updateTopBarAvatar();
+                    }
+                } else {
+                    showAlert(data.message || 'فشل في رفع الصورة', 'error');
+                }
+            } catch (error) {
+                console.error('Error uploading picture:', error);
+                showAlert('حدث خطأ في رفع الصورة: ' + error.message, 'error');
+            }
+        }
+
+        // ========== حذف الصورة الشخصية ==========
+        async function deleteProfilePicture() {
+            if (!confirm('هل أنت متأكد من حذف الصورة الشخصية؟')) return;
+
+            try {
+                var response = await fetch(API_URL + '/profile-picture/' + currentUser.id, {
+                    method: 'DELETE'
+                });
+
+                var data = await response.json();
+
+                if (data.success) {
+                    localStorage.removeItem('user_profile_picture_' + currentUser.id);
+                    
+                    showAlert('تم حذف الصورة بنجاح', 'success');
+                    loadUserData();
+                    
+                    if (typeof renderSidebar === 'function') {
+                        renderSidebar();
+                    }
+                    if (typeof updateTopBarAvatar === 'function') {
+                        updateTopBarAvatar();
+                    }
+                } else {
+                    showAlert(data.message || 'فشل في حذف الصورة', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting picture:', error);
+                showAlert('حدث خطأ في حذف الصورة', 'error');
+            }
+        }
+
+        // ========== عرض رسالة ==========
+        function showAlert(message, type) {
+            var container = document.getElementById('alertContainer');
+            var iconMap = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                info: 'fa-info-circle'
+            };
+
+            container.innerHTML = `
+                <div class="alert alert-${type}">
+                    <i class="fas ${iconMap[type]}"></i>
+                    ${message}
+                </div>
+            `;
+
+            setTimeout(function() {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // ========== تحميل البيانات عند فتح الصفحة ==========
+        window.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+        });
+    </script>
+
+    <script src="config.js"></script>
+    <script src="check-permission.js"></script>
+    <script src="sidebar.js"></script>
+</body>
+
+</html>

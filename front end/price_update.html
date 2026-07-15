@@ -1,0 +1,1913 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحديث الأسعار - سعر الشراء وسعر البيع</title>
+    <link rel="stylesheet" href="common-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4361ee;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3a0ca3;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo i {
+            font-size: 32px;
+            background: linear-gradient(135deg, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo span {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #4cc9f0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .close-sidebar {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .close-sidebar:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-nav {
+            padding: 20px 15px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 18px;
+            margin: 6px 0;
+            border-radius: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #4361ee, transparent);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-item:hover::before,
+        .nav-item.active::before {
+            width: 100%;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 18px;
+        }
+
+        .nav-item span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: white;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 14px;
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ef4444;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #1f2937;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .menu-toggle:hover {
+            background: #f3f4f6;
+        }
+
+        .top-bar-title h2 {
+            font-size: 20px;
+            color: #1f2937;
+            font-weight: 700;
+        }
+
+        .top-bar-title p {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .notifications {
+            position: relative;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .notifications:hover {
+            background: #f3f4f6;
+        }
+
+        .notifications i {
+            font-size: 20px;
+            color: #6b7280;
+        }
+
+        .notifications .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+
+        .user-info:hover {
+            background: #f3f4f6;
+        }
+
+        .user-info i {
+            font-size: 32px;
+            color: #4361ee;
+        }
+
+        .user-info span {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .page-content {
+            padding: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card i {
+            font-size: 32px;
+            color: #4361ee;
+        }
+
+        .stat-card div strong {
+            font-size: 24px;
+            display: block;
+            color: #1f2937;
+        }
+
+        .stat-card div span {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .modern-card {
+            background: white;
+            border-radius: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .modern-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 2px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .card-header h3 {
+            font-size: 18px;
+            color: #1f2937;
+            font-weight: 700;
+        }
+
+        .card-header h3 i {
+            margin-left: 8px;
+            color: #4361ee;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .upload-box {
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .upload-box:hover {
+            border-color: #4361ee;
+            background: #f1f5f9;
+            transform: translateY(-2px);
+        }
+
+        .upload-box.drag-over {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .upload-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4361ee20, #3a0ca320);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+        }
+
+        .upload-icon i {
+            font-size: 36px;
+            color: #4361ee;
+        }
+
+        .upload-box h4 {
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .upload-box p {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .layers-badge {
+            background: #e0e7ff;
+            color: #4361ee;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .layers-badge:hover {
+            background: #4361ee;
+            color: white;
+        }
+
+        .edit-price-btn {
+            background: #e0e7ff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            color: #4361ee;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 12px;
+        }
+
+        .edit-price-btn:hover {
+            background: #4361ee;
+            color: white;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            max-height: 550px;
+            overflow-y: auto;
+            border-radius: 16px;
+        }
+
+        .modern-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .modern-table th,
+        .modern-table td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 13px;
+        }
+
+        .modern-table th {
+            background: #f9fafb;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            color: #1f2937;
+        }
+
+        .product-code {
+            font-family: monospace;
+            background: #f3f4f6;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            display: inline-block;
+        }
+
+        .price-old {
+            color: #6b7280;
+            text-decoration: line-through;
+        }
+
+        .price-new {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .profit-positive {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .profit-negative {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .profit-warning {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+
+        .stock-qty.low {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .progress-container {
+            background: #e5e7eb;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4361ee, #10b981);
+            transition: width 0.3s;
+            width: 0%;
+        }
+
+        .preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+            display: none;
+        }
+
+        .preview-modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 25px;
+        }
+
+        .layer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10002;
+            display: none;
+        }
+
+        .layer-modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 70vh;
+            overflow-y: auto;
+            padding: 25px;
+        }
+
+        .edit-price-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10003;
+            display: none;
+        }
+
+        .edit-price-modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+        }
+
+        .edit-price-modal-content h3 {
+            margin-bottom: 20px;
+            color: #1f2937;
+            border-right: 4px solid #4361ee;
+            padding-right: 15px;
+        }
+
+        .edit-price-modal-content .input-group {
+            margin-bottom: 20px;
+        }
+
+        .edit-price-modal-content .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .edit-price-modal-content .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-family: inherit;
+        }
+
+        .edit-price-modal-content .input-group input:focus {
+            border-color: #4361ee;
+            outline: none;
+        }
+
+        .edit-price-modal-content .product-info {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .edit-price-modal-content .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .edit-price-modal-content .modal-buttons button {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .edit-price-modal-content .btn-save {
+            background: #10b981;
+            color: white;
+        }
+
+        .edit-price-modal-content .btn-cancel {
+            background: #6b7280;
+            color: white;
+        }
+
+        .close-modal-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6b7280;
+            transition: all 0.3s;
+        }
+
+        .close-modal-btn:hover {
+            color: #ef4444;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 14px 24px;
+            border-radius: 16px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .loading-spinner {
+            background: white;
+            padding: 35px;
+            border-radius: 24px;
+            text-align: center;
+        }
+
+        .loading-spinner i {
+            font-size: 48px;
+            color: #4361ee;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            align-items: flex-end;
+        }
+
+        .filter-group .filter-item {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #1f2937;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+        }
+
+        .search-input {
+            padding: 10px 15px;
+            border-radius: 30px;
+            border: 1px solid #cbd5e1;
+            width: 250px;
+            font-family: inherit;
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4361ee;
+        }
+
+        .price-type-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .price-type-tab {
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            background: #f3f4f6;
+            color: #1f2937;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .price-type-tab.active {
+            background: #4361ee;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(100%);
+                position: fixed;
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .close-sidebar {
+                display: flex;
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-content {
+                padding: 15px;
+            }
+
+            .top-bar {
+                padding: 0 15px;
+            }
+
+            .user-info span {
+                display: none;
+            }
+
+            .filter-group {
+                flex-direction: column;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"><i class="fas fa-spinner"></i>
+            <p>جاري المعالجة...</p>
+        </div>
+    </div>
+
+    <div class="preview-modal" id="previewModal">
+        <div class="preview-modal-content">
+            <div
+                style="display: flex; justify-content: space-between; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e5e7eb;">
+                <h3><i class="fas fa-chart-line"></i> معاينة تغييرات الأسعار</h3>
+                <button class="close-modal-btn" onclick="closePreviewModal()">&times;</button>
+            </div>
+            <div id="previewContent"></div>
+            <div id="previewStats" style="margin: 15px 0; padding: 15px; background: #f8fafc; border-radius: 12px;">
+            </div>
+            <div style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 20px;">
+                <button onclick="closePreviewModal()" class="btn-secondary">إلغاء</button>
+                <button onclick="confirmApply()" class="btn-success">تطبيق التغييرات</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="layer-modal" id="layerModal">
+        <div class="layer-modal-content">
+            <div
+                style="display: flex; justify-content: space-between; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e5e7eb;">
+                <h3><i class="fas fa-layer-group"></i> طبقات المخزون - <span id="layerProductName"></span></h3>
+                <button class="close-modal-btn" onclick="closeLayerModal()">&times;</button>
+            </div>
+            <div id="layersContent"></div>
+        </div>
+    </div>
+
+    <div class="edit-price-modal" id="editPriceModal">
+        <div class="edit-price-modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3><i class="fas fa-edit"></i> تعديل سعر المنتج</h3>
+                <button class="close-modal-btn" onclick="closeEditPriceModal()">&times;</button>
+            </div>
+            <div class="product-info" id="editProductInfo">
+                <strong id="editProductName">اسم المنتج</strong><br>
+                <span id="editProductCode" class="product-code">كود: 0000</span>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-dollar-sign"></i> سعر الشراء (قبل الضريبة)</label>
+                <input type="number" id="editPurchasePrice" step="0.01" placeholder="سعر الشراء">
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-tag"></i> سعر البيع (قبل الضريبة)</label>
+                <input type="number" id="editSellingPrice" step="0.01" placeholder="سعر البيع">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeEditPriceModal()">إلغاء</button>
+                <button class="btn-save" onclick="savePriceChanges()">حفظ التغييرات</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app">
+        <aside class="sidebar" id="sidebar"></aside>
+        <main class="main-content">
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+                <div class="top-bar-title">
+                    <h2>تحديث الأسعار - سعر الشراء وسعر البيع</h2>
+                    <p id="currentDateTime"></p>
+                </div>
+                <div class="top-bar-actions">
+                    <div class="notifications"><i class="fas fa-bell"></i><span class="badge"
+                            id="notificationBadge">0</span></div>
+                    <div class="user-info" onclick="window.location.href='profile.html'" style="cursor: pointer;">
+                        <div class="user-avatar-top" id="topBarAvatar">
+                            <!-- هيتعبأ بالجافاسكريبت -->
+                        </div>
+                        <span class="user-name-top" id="userName">مدير النظام</span>
+                    </div>
+            </header>
+
+            <div class="page-content">
+                <div class="stats-grid" id="statsGrid"></div>
+
+                <div class="modern-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-percent"></i> تحديث جماعي سريع</h3>
+                        <div><button onclick="downloadSampleExcel()" class="btn-primary"><i class="fas fa-download"></i>
+                                تحميل قالب Excel</button></div>
+                    </div>
+                    <div class="card-body">
+                        <div class="price-type-tabs">
+                            <div class="price-type-tab active" onclick="setPriceType('selling')">تحديث سعر البيع</div>
+                            <div class="price-type-tab" onclick="setPriceType('purchase')">تحديث سعر الشراء</div>
+                        </div>
+                        <div class="filter-group">
+                            <div class="filter-item">
+                                <label><i class="fas fa-tags"></i> الفئة</label>
+                                <select id="categoryFilter"></select>
+                            </div>
+                            <div class="filter-item">
+                                <label><i class="fas fa-percent"></i> نسبة التغيير (%)</label>
+                                <input type="number" id="percentageChange" value="10" step="5">
+                            </div>
+                            <div class="filter-item">
+                                <label>&nbsp;</label>
+                                <button onclick="applyPercentageToCategory()" class="btn-primary"
+                                    style="width: 100%;"><i class="fas fa-chart-line"></i> تطبيق النسبة</button>
+                            </div>
+                            <div class="filter-item">
+                                <label>&nbsp;</label>
+                                <button onclick="resetAllPrices()" class="btn-warning" style="width: 100%;"><i
+                                        class="fas fa-undo-alt"></i> إعادة تعيين</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modern-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-file-excel"></i> استيراد تحديث الأسعار من Excel</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-box" id="uploadBox">
+                            <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                            <h4>اسحب ملف Excel هنا أو اضغط للاختيار</h4>
+                            <p>يدعم ملفات .xlsx, .xls | الأعمدة: الكود، سعر الشراء الجديد، سعر البيع الجديد</p>
+                            <button type="button" class="upload-btn"
+                                onclick="document.getElementById('excelFileInput').click()">
+                                <i class="fas fa-folder-open"></i> اختيار ملف
+                            </button>
+                            <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;">
+                        </div>
+                        <div id="uploadProgress" style="display: none;">
+                            <div class="progress-container">
+                                <div class="progress-bar" id="progressBar"></div>
+                            </div>
+                            <p id="uploadStatus"
+                                style="margin-top: 10px; font-size: 12px; color: #4361ee; text-align: center;"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modern-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list"></i> قائمة المنتجات</h3>
+                        <input type="text" id="productSearch" class="search-input" placeholder="بحث بالكود أو الاسم...">
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>الكود</th>
+                                        <th>المنتج</th>
+                                        <th>الفئة</th>
+                                        <th>سعر الشراء</th>
+                                        <th>سعر البيع</th>
+                                        <th>الربح للوحدة</th>
+                                        <th>نسبة الربح</th>
+                                        <th>المخزون</th>
+                                        <th>الطبقات</th>
+                                        <th>إجراء</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modern-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-history"></i> سجل تغييرات الأسعار</h3><button onclick="clearPriceHistory()"
+                            class="btn-secondary" style="padding: 6px 15px;"><i class="fas fa-trash"></i> مسح
+                            السجل</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>التاريخ</th>
+                                        <th>المنتج</th>
+                                        <th>نوع السعر</th>
+                                        <th>السعر القديم</th>
+                                        <th>السعر الجديد</th>
+                                        <th>نسبة التغيير</th>
+                                        <th>المستخدم</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ========== استخدام API_URL من check-permission.js ==========
+        // API_URL معرف بالفعل في check-permission.js
+
+        // ========== التحقق من الصلاحية ==========
+        // تم إزالة checkPagePermission واستخدام checkStorekeeperPermission
+        var currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'storekeeper')) {
+            if (currentUser && currentUser.role === 'cashier') {
+                window.location.href = 'pos.html';
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+        document.getElementById('userName').innerText = currentUser.name;
+
+        // ========== المتغيرات العامة ==========
+        const VAT_RATE = 14;
+        const DB_NAME = 'InventoryDB';
+        const DB_VERSION = 3;
+        const PRODUCTS_STORE = 'products';
+        const LAYERS_STORE = 'productLayers';
+
+        let db = null;
+        let products = [];
+        let pendingUpdates = [];
+        let currentPriceType = 'selling';
+        let currentEditingProduct = null;
+
+        // ========== فتح قاعدة البيانات ==========
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(PRODUCTS_STORE)) {
+                        db.createObjectStore(PRODUCTS_STORE, { keyPath: 'id' });
+                    }
+                    if (!db.objectStoreNames.contains(LAYERS_STORE)) {
+                        db.createObjectStore(LAYERS_STORE, { keyPath: 'productId' });
+                    }
+                    if (!db.objectStoreNames.contains('priceHistory')) {
+                        db.createObjectStore('priceHistory', { keyPath: 'id' });
+                    }
+                };
+            });
+        }
+
+        // ========== تحميل المنتجات ==========
+        async function loadProducts() {
+            return new Promise((resolve) => {
+                if (!db) { resolve([]); return; }
+                const transaction = db.transaction([PRODUCTS_STORE], 'readonly');
+                const store = transaction.objectStore(PRODUCTS_STORE);
+                const request = store.getAll();
+                request.onsuccess = () => {
+                    products = request.result || [];
+                    resolve(products);
+                };
+                request.onerror = () => { products = []; resolve([]); };
+            });
+        }
+
+        // ========== حفظ المنتجات ==========
+        async function saveProducts() {
+            if (!db) return;
+            const transaction = db.transaction([PRODUCTS_STORE], 'readwrite');
+            const store = transaction.objectStore(PRODUCTS_STORE);
+            for (let product of products) {
+                store.put(product);
+            }
+            return new Promise(resolve => { transaction.oncomplete = resolve; });
+        }
+
+        // ========== الحصول على طبقات المنتج ==========
+        async function getProductLayers(productId) {
+            if (!db || !db.objectStoreNames.contains(LAYERS_STORE)) return [];
+            return new Promise((resolve) => {
+                const transaction = db.transaction([LAYERS_STORE], 'readonly');
+                const store = transaction.objectStore(LAYERS_STORE);
+                const request = store.get(productId);
+                request.onsuccess = () => resolve(request.result?.layers || []);
+                request.onerror = () => resolve([]);
+            });
+        }
+
+        // ========== حساب متوسط سعر الشراء من الطبقات ==========
+        async function getAveragePurchasePrice(productId) {
+            const layers = await getProductLayers(productId);
+            if (layers.length === 0) {
+                const product = products.find(p => p.id === productId);
+                return product?.purchasePrice || 0;
+            }
+            let totalQty = 0, totalCost = 0;
+            for (let layer of layers) {
+                const remaining = layer.remaining || layer.quantity;
+                totalQty += remaining;
+                totalCost += remaining * layer.purchasePrice;
+            }
+            return totalQty > 0 ? totalCost / totalQty : 0;
+        }
+
+        // ========== الحصول على كمية المخزون ==========
+        function getStockQuantity(productId) {
+            const stock = JSON.parse(localStorage.getItem('stock') || '[]');
+            return stock.filter(s => s.productId == productId).reduce((sum, s) => sum + s.quantity, 0);
+        }
+
+        // ========== سجل الأسعار ==========
+        async function getPriceHistory() {
+            if (!db || !db.objectStoreNames.contains('priceHistory')) return [];
+            return new Promise((resolve) => {
+                const transaction = db.transaction(['priceHistory'], 'readonly');
+                const store = transaction.objectStore('priceHistory');
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result || []);
+                request.onerror = () => resolve([]);
+            });
+        }
+
+        async function addPriceHistory(productId, productName, productCode, priceType, oldPrice, newPrice, percentageChange) {
+            if (!db || !db.objectStoreNames.contains('priceHistory')) return;
+            const history = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                productId, productName, productCode, priceType,
+                oldPrice, newPrice, percentageChange,
+                updatedBy: currentUser?.name || 'نظام'
+            };
+            const transaction = db.transaction(['priceHistory'], 'readwrite');
+            const store = transaction.objectStore('priceHistory');
+            store.add(history);
+        }
+
+        async function clearPriceHistoryDB() {
+            if (!db || !db.objectStoreNames.contains('priceHistory')) return;
+            const transaction = db.transaction(['priceHistory'], 'readwrite');
+            const store = transaction.objectStore('priceHistory');
+            store.clear();
+            displayHistory();
+            showNotification('تم مسح سجل التغييرات', 'success');
+        }
+
+        // ========== عرض الإحصائيات ==========
+        async function displayStats() {
+            const totalProducts = products.length;
+            let totalStockValue = 0;
+            let totalExpectedProfit = 0;
+
+            for (let p of products) {
+                const avgPrice = await getAveragePurchasePrice(p.id);
+                const stockQty = getStockQuantity(p.id);
+                totalStockValue += avgPrice * stockQty;
+                const sellingPrice = p.sellingPriceBefore || 0;
+                totalExpectedProfit += stockQty * (sellingPrice - avgPrice);
+            }
+
+            const lowStockCount = products.filter(p => {
+                const qty = getStockQuantity(p.id);
+                return qty <= (p.minStock || 5);
+            }).length;
+
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-card"><i class="fas fa-boxes"></i><div><strong>${totalProducts}</strong><span>إجمالي المنتجات</span></div></div>
+                <div class="stat-card"><i class="fas fa-dollar-sign"></i><div><strong>${totalStockValue.toLocaleString()} ج.م</strong><span>قيمة المخزون</span></div></div>
+                <div class="stat-card"><i class="fas fa-chart-line"></i><div><strong class="profit-positive">${totalExpectedProfit.toLocaleString()} ج.م</strong><span>الأرباح المتوقعة</span></div></div>
+                <div class="stat-card"><i class="fas fa-exclamation-triangle"></i><div><strong>${lowStockCount}</strong><span>منتجات منخفضة</span></div></div>
+            `;
+        }
+
+        // ========== عرض المنتجات ==========
+        async function renderProductsTable() {
+            const searchTerm = document.getElementById('productSearch')?.value.toLowerCase() || '';
+            const categoryFilter = document.getElementById('categoryFilter')?.value || '';
+
+            let filtered = products.filter(p =>
+                (p.code?.toString().toLowerCase().includes(searchTerm) || p.name?.toLowerCase().includes(searchTerm)) &&
+                (categoryFilter === '' || p.category === categoryFilter)
+            );
+
+            if (filtered.length === 0) {
+                document.getElementById('productsTableBody').innerHTML = '<tr><td colspan="10" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد منتجات</p><p>قم بإضافة منتجات من صفحة المنتجات أولاً</p></div></td></tr>';
+                return;
+            }
+
+            let html = '';
+            for (let p of filtered) {
+                const avgPrice = await getAveragePurchasePrice(p.id);
+                const sellingPrice = p.sellingPrice || 0;
+                const purchasePrice = p.purchasePrice || 0;
+                const profit = sellingPrice - avgPrice;
+                const profitPercent = avgPrice > 0 ? (profit / avgPrice * 100) : 0;
+                const stockQty = getStockQuantity(p.id);
+                const layers = await getProductLayers(p.id);
+                const layersCount = layers.length;
+                const profitClass = profit > 20 ? 'profit-positive' : (profit < 5 ? 'profit-negative' : 'profit-warning');
+                const stockClass = stockQty <= (p.minStock || 5) ? 'stock-qty low' : '';
+
+                html += `<tr>
+                    <td><span class="product-code">${p.code}</span></td>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.category || '-'}</td>
+                    <td>${purchasePrice.toFixed(2)} ج.م</td>
+                    <td style="font-weight: bold; color: #4361ee;">${sellingPrice.toFixed(2)} ج.م</td>
+                    <td class="${profitClass}">${profit.toFixed(2)} ج.م</td>
+                    <td class="${profitClass}">${profitPercent.toFixed(1)}%</td>
+                    <td class="${stockClass}"><strong>${stockQty}</strong></td>
+                    <td><button class="layers-badge" onclick="showLayers(${p.id}, '${p.name.replace(/'/g, "\\'")}', '${p.code}')"><i class="fas fa-layer-group"></i> ${layersCount} طبقة</button></td>
+                    <td><button class="edit-price-btn" onclick="openEditPriceModal(${p.id})"><i class="fas fa-edit"></i> تعديل</button></td>
+                </tr>`;
+            }
+            document.getElementById('productsTableBody').innerHTML = html;
+
+            const categorySelect = document.getElementById('categoryFilter');
+            const currentCat = categorySelect.value;
+            const categories = [...new Set(products.map(p => p.category).filter(c => c))];
+            categorySelect.innerHTML = '<option value="">جميع الفئات</option>' + categories.map(c => `<option value="${c}" ${c === currentCat ? 'selected' : ''}>${c}</option>`).join('');
+        }
+
+        // ========== فتح نافذة تعديل الأسعار الداخلية ==========
+        window.openEditPriceModal = function (productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            currentEditingProduct = product;
+            document.getElementById('editProductName').innerHTML = product.name;
+            document.getElementById('editProductCode').innerHTML = `كود: ${product.code}`;
+            document.getElementById('editPurchasePrice').value = product.purchasePrice || 0;
+            document.getElementById('editSellingPrice').value = product.sellingPrice || 0;
+            document.getElementById('editPriceModal').style.display = 'flex';
+        };
+
+        function closeEditPriceModal() {
+            document.getElementById('editPriceModal').style.display = 'none';
+            currentEditingProduct = null;
+        }
+
+        async function savePriceChanges() {
+            if (!currentEditingProduct) return;
+
+            const newPurchasePrice = parseFloat(document.getElementById('editPurchasePrice').value);
+            const newSellingPrice = parseFloat(document.getElementById('editSellingPrice').value);
+
+            if (isNaN(newPurchasePrice) || newPurchasePrice < 0) {
+                showNotification('سعر الشراء غير صالح', 'error');
+                return;
+            }
+            if (isNaN(newSellingPrice) || newSellingPrice < 0) {
+                showNotification('سعر البيع غير صالح', 'error');
+                return;
+            }
+
+            let updated = false;
+
+            if (Math.abs((currentEditingProduct.purchasePrice || 0) - newPurchasePrice) > 0.01) {
+                const oldPrice = currentEditingProduct.purchasePrice || 0;
+                currentEditingProduct.purchasePrice = newPurchasePrice;
+                await addPriceHistory(currentEditingProduct.id, currentEditingProduct.name, currentEditingProduct.code, 'سعر الشراء', oldPrice, newPurchasePrice, ((newPurchasePrice - oldPrice) / oldPrice) * 100);
+                updated = true;
+            }
+
+            if (Math.abs((currentEditingProduct.sellingPriceBefore || 0) - newSellingPrice) > 0.01) {
+                const oldPrice = currentEditingProduct.sellingPriceBefore || 0;
+                currentEditingProduct.sellingPriceBefore = newSellingPrice;
+                currentEditingProduct.sellingPriceAfter = Math.round(newSellingPrice * (1 + VAT_RATE / 100));
+                await addPriceHistory(currentEditingProduct.id, currentEditingProduct.name, currentEditingProduct.code, 'سعر البيع', oldPrice, newSellingPrice, ((newSellingPrice - oldPrice) / oldPrice) * 100);
+                updated = true;
+            }
+
+            if (updated) {
+                await saveProducts();
+                await renderProductsTable();
+                await displayStats();
+                await displayHistory();
+                showNotification(`تم تحديث أسعار ${currentEditingProduct.name} بنجاح`, 'success');
+            } else {
+                showNotification('لم يتم تغيير أي سعر', 'warning');
+            }
+
+            closeEditPriceModal();
+        }
+
+        // ========== عرض طبقات المنتج ==========
+        window.showLayers = async function (productId, productName, productCode) {
+            showLoading(true);
+            document.getElementById('layerProductName').innerHTML = `${productName} (${productCode})`;
+            const layers = await getProductLayers(productId);
+            const product = products.find(p => p.id === productId);
+            const sellingPrice = product?.sellingPriceBefore || 0;
+            const currentStock = getStockQuantity(productId);
+
+            if (layers.length === 0) {
+                document.getElementById('layersContent').innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <i class="fas fa-box-open" style="font-size: 48px; color: #cbd5e1; margin-bottom: 15px;"></i>
+                        <p style="color: #6b7280;">لا توجد طبقات مخزون لهذا المنتج</p>
+                        <p style="color: #6b7280; font-size: 12px;">قم بشراء المنتج أولاً من صفحة فاتورة الشراء</p>
+                        <p style="color: #6b7280; font-size: 12px;">المخزون الحالي: <strong>${currentStock}</strong> قطعة</p>
+                    </div>
+                `;
+                showLoading(false);
+                document.getElementById('layerModal').style.display = 'flex';
+                return;
+            }
+
+            let html = `<div class="table-responsive"><table class="modern-table"><thead><tr><th>#</th><th>سعر الشراء</th><th>الكمية المشتراة</th><th>الكمية المتبقية</th><th>القيمة الإجمالية</th><th>الربح المتوقع</th><th>تاريخ الشراء</th></tr></thead><tbody>`;
+            let i = 1, totalQty = 0, totalRemaining = 0, totalCost = 0, totalProfit = 0;
+
+            for (let layer of layers) {
+                const qty = layer.quantity;
+                const remaining = layer.remaining || layer.quantity;
+                const layerProfit = remaining * (sellingPrice - layer.purchasePrice);
+                totalQty += qty;
+                totalRemaining += remaining;
+                totalCost += remaining * layer.purchasePrice;
+                totalProfit += layerProfit;
+
+                html += `<tr>
+                    <td>${i++}</td>
+                    <td>${layer.purchasePrice.toFixed(2)} ج.م</td>
+                    <td><strong>${qty}</strong></td>
+                    <td>${remaining}</td>
+                    <td>${(remaining * layer.purchasePrice).toFixed(2)} ج.م</td>
+                    <td class="profit-positive">${layerProfit.toFixed(2)} ج.م</td>
+                    <td>${new Date(layer.date).toLocaleString('ar-EG')}</td>
+                </tr>`;
+            }
+
+            html += `</tbody></table></div>
+                <div style="margin-top: 20px; padding: 15px; background: #f0fdf4; border-radius: 12px;">
+                    <strong>ملخص المنتج:</strong><br>
+                    إجمالي الكمية المشتراة: ${totalQty} قطعة<br>
+                    المخزون الحالي المتبقي: <strong class="${totalRemaining <= (product?.minStock || 5) ? 'profit-negative' : 'profit-positive'}">${totalRemaining} قطعة</strong><br>
+                    إجمالي قيمة المخزون المتبقي: ${totalCost.toFixed(2)} ج.م<br>
+                    متوسط سعر الشراء: ${totalRemaining > 0 ? (totalCost / totalRemaining).toFixed(2) : 0} ج.م<br>
+                    سعر البيع الحالي: ${sellingPrice.toFixed(2)} ج.م<br>
+                    إجمالي الربح المتوقع: <span class="profit-positive">${totalProfit.toFixed(2)} ج.م</span>
+                </div>
+                <div style="margin-top: 15px; padding: 12px; background: #fef3c7; border-radius: 12px; font-size: 12px;">
+                    <i class="fas fa-info-circle"></i> <strong>ملاحظة:</strong> نظام الطبقات يعمل بنظام FIFO، عند البيع يتم خصم الكمية من أقدم طبقة أولاً.
+                </div>`;
+
+            document.getElementById('layersContent').innerHTML = html;
+            showLoading(false);
+            document.getElementById('layerModal').style.display = 'flex';
+        };
+
+        function closeLayerModal() { document.getElementById('layerModal').style.display = 'none'; }
+
+        function setPriceType(type) {
+            currentPriceType = type;
+            const tabs = document.querySelectorAll('.price-type-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            if (type === 'selling') {
+                tabs[0].classList.add('active');
+            } else {
+                tabs[1].classList.add('active');
+            }
+        }
+
+        async function applyPercentageToCategory() {
+            const category = document.getElementById('categoryFilter').value;
+            const percent = parseFloat(document.getElementById('percentageChange').value);
+            if (!category) { showNotification('الرجاء اختيار فئة أولاً', 'error'); return; }
+            if (isNaN(percent)) { showNotification('نسبة غير صالحة', 'error'); return; }
+
+            let changes = [];
+            for (let p of products) {
+                if (p.category === category) {
+                    if (currentPriceType === 'selling') {
+                        const oldPrice = p.sellingPriceBefore || 0;
+                        const newPrice = oldPrice * (1 + percent / 100);
+                        if (Math.abs(oldPrice - newPrice) > 0.01) {
+                            changes.push({ id: p.id, code: p.code, name: p.name, type: 'سعر البيع', oldPrice: oldPrice, newPrice: newPrice, percent: percent });
+                        }
+                    } else {
+                        const oldPrice = p.purchasePriceBefore || 0;
+                        const newPrice = oldPrice * (1 + percent / 100);
+                        if (Math.abs(oldPrice - newPrice) > 0.01) {
+                            changes.push({ id: p.id, code: p.code, name: p.name, type: 'سعر الشراء', oldPrice: oldPrice, newPrice: newPrice, percent: percent });
+                        }
+                    }
+                }
+            }
+            if (changes.length === 0) { showNotification('لا توجد تغييرات', 'warning'); return; }
+
+            for (let c of changes) {
+                const product = products.find(p => p.id === c.id);
+                if (product) {
+                    if (c.type === 'سعر البيع') {
+                        product.sellingPriceBefore = c.newPrice;
+                        product.sellingPriceAfter = Math.round(c.newPrice * (1 + VAT_RATE / 100));
+                    } else {
+                        product.purchasePriceBefore = c.newPrice;
+                        product.purchasePriceAfter = Math.round(c.newPrice * (1 + VAT_RATE / 100));
+                    }
+                    await addPriceHistory(product.id, product.name, product.code, c.type, c.oldPrice, c.newPrice, c.percent);
+                }
+            }
+            await saveProducts();
+            await renderProductsTable();
+            await displayStats();
+            await displayHistory();
+            showNotification(`تم تحديث ${changes.length} منتج في فئة ${category}`, 'success');
+        }
+
+        async function resetAllPrices() {
+            if (products.length === 0) { showNotification('لا توجد منتجات', 'warning'); return; }
+            let count = 0;
+            for (let p of products) {
+                if (currentPriceType === 'selling') {
+                    const oldPrice = p.sellingPriceBefore || 0;
+                    const purchasePrice = p.purchasePriceBefore || 0;
+                    const newPrice = purchasePrice * 1.25;
+                    if (Math.abs(oldPrice - newPrice) > 0.01) {
+                        p.sellingPriceBefore = newPrice;
+                        p.sellingPriceAfter = Math.round(newPrice * (1 + VAT_RATE / 100));
+                        const percentChange = ((newPrice - oldPrice) / oldPrice) * 100;
+                        await addPriceHistory(p.id, p.name, p.code, 'سعر البيع', oldPrice, newPrice, percentChange);
+                        count++;
+                    }
+                } else {
+                    const oldPrice = p.purchasePriceBefore || 0;
+                    const newPrice = 50;
+                    if (Math.abs(oldPrice - newPrice) > 0.01) {
+                        p.purchasePriceBefore = newPrice;
+                        p.purchasePriceAfter = Math.round(newPrice * (1 + VAT_RATE / 100));
+                        const percentChange = ((newPrice - oldPrice) / oldPrice) * 100;
+                        await addPriceHistory(p.id, p.name, p.code, 'سعر الشراء', oldPrice, newPrice, percentChange);
+                        count++;
+                    }
+                }
+            }
+            await saveProducts();
+            await renderProductsTable();
+            await displayStats();
+            await displayHistory();
+            showNotification(`تم إعادة تعيين ${count} منتج`, 'success');
+        }
+
+        function downloadSampleExcel() {
+            if (products.length === 0) { showNotification('لا توجد منتجات', 'error'); return; }
+            const headers = ['الكود', 'اسم المنتج', 'سعر الشراء الحالي', 'سعر البيع الحالي', 'سعر الشراء الجديد', 'سعر البيع الجديد'];
+            const data = [headers];
+            for (let p of products) {
+                data.push([p.code, p.name, (p.purchasePriceBefore || 0).toFixed(2), (p.sellingPriceBefore || 0).toFixed(2), '', '']);
+            }
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'تحديث_الأسعار');
+            XLSX.writeFile(wb, `قالب_تحديث_الاسعار_${new Date().toISOString().slice(0, 10)}.xlsx`);
+            showNotification('تم تحميل القالب', 'success');
+        }
+
+        async function previewExcelFile(file) {
+            showLoading(true);
+            const progressDiv = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('progressBar');
+            const statusDiv = document.getElementById('uploadStatus');
+            progressDiv.style.display = 'block';
+            progressBar.style.width = '10%';
+            statusDiv.innerText = 'جاري قراءة الملف...';
+
+            const reader = new FileReader();
+            reader.onload = async function (e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    if (!rows || rows.length < 2) throw new Error('الملف فارغ');
+
+                    const headers = rows[0].map(h => String(h || '').trim());
+                    let codeCol = -1, purchasePriceCol = -1, sellingPriceCol = -1;
+
+                    for (let i = 0; i < headers.length; i++) {
+                        const h = headers[i];
+                        if (h.includes('كود') || h.includes('code')) codeCol = i;
+                        if (h.includes('سعر الشراء الجديد') || h.includes('purchase')) purchasePriceCol = i;
+                        if (h.includes('سعر البيع الجديد') || h.includes('selling')) sellingPriceCol = i;
+                    }
+                    if (codeCol === -1) codeCol = 0;
+
+                    progressBar.style.width = '30%';
+                    statusDiv.innerText = 'جاري معالجة البيانات...';
+
+                    const changes = [];
+                    let found = 0;
+
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i];
+                        if (!row) continue;
+                        let code = row[codeCol]?.toString().trim();
+                        if (!code) continue;
+
+                        const product = products.find(p => p.code == code);
+                        if (!product) continue;
+                        found++;
+
+                        if (purchasePriceCol !== -1 && row[purchasePriceCol]) {
+                            const newPrice = parseFloat(row[purchasePriceCol]);
+                            if (!isNaN(newPrice) && Math.abs((product.purchasePriceBefore || 0) - newPrice) > 0.01) {
+                                changes.push({
+                                    id: product.id, code: product.code, name: product.name,
+                                    type: 'سعر الشراء',
+                                    oldPrice: product.purchasePriceBefore || 0,
+                                    newPrice: newPrice
+                                });
+                            }
+                        }
+
+                        if (sellingPriceCol !== -1 && row[sellingPriceCol]) {
+                            const newPrice = parseFloat(row[sellingPriceCol]);
+                            if (!isNaN(newPrice) && Math.abs((product.sellingPriceBefore || 0) - newPrice) > 0.01) {
+                                changes.push({
+                                    id: product.id, code: product.code, name: product.name,
+                                    type: 'سعر البيع',
+                                    oldPrice: product.sellingPriceBefore || 0,
+                                    newPrice: newPrice
+                                });
+                            }
+                        }
+
+                        if (i % 500 === 0) progressBar.style.width = `${30 + (i / rows.length) * 60}%`;
+                    }
+
+                    if (changes.length === 0) {
+                        showNotification(found > 0 ? 'الأسعار مطابقة' : 'لا توجد منتجات مطابقة', 'warning');
+                        showLoading(false);
+                        return;
+                    }
+
+                    pendingUpdates = changes;
+                    let previewHtml = `<div class="table-responsive"><table class="modern-table"><thead><tr><th>الكود</th><th>المنتج</th><th>نوع السعر</th><th>السعر القديم</th><th>السعر الجديد</th></tr></thead><tbody>`;
+                    for (let c of changes.slice(0, 100)) {
+                        previewHtml += `<tr>
+                            <td><span class="product-code">${c.code}</span></td>
+                            <td>${c.name}</td>
+                            <td>${c.type}</td>
+                            <td class="price-old">${c.oldPrice.toFixed(2)} ج.م</td>
+                            <td class="price-new">${c.newPrice.toFixed(2)} ج.م</td>
+                        </tr>`;
+                    }
+                    if (changes.length > 100) previewHtml += `<tr><td colspan="5" style="text-align:center;">... و${changes.length - 100} تغيير آخر</td></tr>`;
+                    previewHtml += `</tbody></table></div>`;
+
+                    document.getElementById('previewContent').innerHTML = previewHtml;
+                    document.getElementById('previewStats').innerHTML = `<div style="padding: 10px; background: #e0e7ff; border-radius: 12px;"><strong>إجمالي التغييرات: ${changes.length}</strong></div>`;
+                    document.getElementById('previewModal').style.display = 'flex';
+                    progressBar.style.width = '100%';
+                    showLoading(false);
+                } catch (error) {
+                    statusDiv.innerText = 'خطأ: ' + error.message;
+                    showNotification(error.message, 'error');
+                    showLoading(false);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function closePreviewModal() { document.getElementById('previewModal').style.display = 'none'; pendingUpdates = []; }
+
+        async function confirmApply() {
+            if (pendingUpdates.length === 0) return;
+            showLoading(true);
+            let updated = 0;
+            for (let u of pendingUpdates) {
+                const product = products.find(p => p.id === u.id);
+                if (product) {
+                    if (u.type === 'سعر الشراء') {
+                        product.purchasePriceBefore = u.newPrice;
+                        product.purchasePriceAfter = Math.round(u.newPrice * (1 + VAT_RATE / 100));
+                    } else {
+                        product.sellingPriceBefore = u.newPrice;
+                        product.sellingPriceAfter = Math.round(u.newPrice * (1 + VAT_RATE / 100));
+                    }
+                    const percentChange = ((u.newPrice - u.oldPrice) / u.oldPrice) * 100;
+                    await addPriceHistory(product.id, product.name, product.code, u.type, u.oldPrice, u.newPrice, percentChange);
+                    updated++;
+                }
+            }
+            if (updated > 0) {
+                await saveProducts();
+                await renderProductsTable();
+                await displayStats();
+                await displayHistory();
+                showNotification(`تم تحديث ${updated} سعر`, 'success');
+            }
+            closePreviewModal();
+            showLoading(false);
+        }
+
+        async function displayHistory() {
+            const history = await getPriceHistory();
+            let html = '';
+            for (let h of history.slice(0, 50)) {
+                const changeClass = h.percentageChange > 0 ? 'profit-positive' : (h.percentageChange < 0 ? 'profit-negative' : '');
+                const changeSymbol = h.percentageChange > 0 ? '+' : '';
+                html += `<tr>
+                    <td>${new Date(h.date).toLocaleString('ar-EG')}</td>
+                    <td>${h.productName || '-'}</td>
+                    <td>${h.priceType || '-'}</td>
+                    <td class="price-old">${(h.oldPrice || 0).toFixed(2)} ج.م</td>
+                    <td class="price-new">${(h.newPrice || 0).toFixed(2)} ج.م</td>
+                    <td class="${changeClass}">${changeSymbol}${(h.percentageChange || 0).toFixed(1)}%</td>
+                    <td>${h.updatedBy}</td>
+                </tr>`;
+            }
+            if (history.length === 0) html = '<tr><td colspan="7" style="text-align:center; padding:40px;">لا توجد سجلات</td></tr>';
+            document.getElementById('historyTable').innerHTML = html;
+        }
+
+        function clearPriceHistory() { clearPriceHistoryDB(); }
+
+        function showLoading(show) { document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none'; }
+
+        function showNotification(msg, type) {
+            let n = document.createElement('div');
+            n.className = `notification ${type}`;
+            n.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i> ${msg}`;
+            document.body.appendChild(n);
+            setTimeout(() => n.remove(), 3000);
+        }
+
+        function updateDateTime() {
+            document.getElementById('currentDateTime').innerHTML = '<i class="far fa-calendar-alt"></i> ' + new Date().toLocaleString('ar-EG');
+        }
+
+        function initSidebar() {
+            const menuToggle = document.getElementById('menuToggle');
+            const closeSidebar = document.getElementById('closeSidebar');
+            const sidebar = document.getElementById('sidebar');
+            if (menuToggle) menuToggle.onclick = () => sidebar.classList.add('open');
+            if (closeSidebar) closeSidebar.onclick = () => sidebar.classList.remove('open');
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 992) {
+                    if (sidebar && !sidebar.contains(e.target) && menuToggle && !menuToggle.contains(e.target)) {
+                        sidebar.classList.remove('open');
+                    }
+                }
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        async function updateNotificationBadge() {
+            const lowCount = products.filter(p => {
+                const qty = getStockQuantity(p.id);
+                return qty <= (p.minStock || 5);
+            }).length;
+            const badge = document.getElementById('notificationBadge');
+            if (badge) {
+                badge.textContent = lowCount;
+                badge.style.display = lowCount > 0 ? 'inline-block' : 'none';
+            }
+        }
+
+        document.getElementById('excelFileInput').addEventListener('change', function (e) {
+            if (this.files && this.files[0]) previewExcelFile(this.files[0]);
+        });
+        document.getElementById('productSearch').addEventListener('input', () => renderProductsTable());
+        document.getElementById('categoryFilter').addEventListener('change', () => renderProductsTable());
+
+        const uploadBox = document.getElementById('uploadBox');
+        uploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadBox.classList.add('drag-over');
+        });
+        uploadBox.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadBox.classList.remove('drag-over');
+        });
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadBox.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
+                document.getElementById('excelFileInput').files = e.dataTransfer.files;
+                previewExcelFile(file);
+            } else showNotification('يرجى اختيار ملف Excel صالح', 'error');
+        });
+
+        async function init() {
+            initSidebar();
+            currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'storekeeper')) {
+                if (currentUser && currentUser.role === 'cashier') window.location.href = 'pos.html';
+                else window.location.href = 'login.html';
+                return;
+            }
+            document.getElementById('userName').innerText = currentUser.name;
+            showLoading(true);
+            await openDB();
+            await loadProducts();
+            await renderProductsTable();
+            await displayStats();
+            await displayHistory();
+            await updateNotificationBadge();
+            showLoading(false);
+            setInterval(updateDateTime, 1000);
+            updateDateTime();
+            setInterval(updateNotificationBadge, 30000);
+        }
+        init();
+    </script>
+    <script src="config.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="check-permission.js"></script>
+</body>
+
+</html>

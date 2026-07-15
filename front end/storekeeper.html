@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جاري التحويل...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading-container {
+            text-align: center;
+            color: white;
+            z-index: 10;
+        }
+
+        .loading-container .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-container h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .loading-container p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .bg-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: floatBlob 20s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            background: #10b981;
+            top: -150px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            width: 300px;
+            height: 300px;
+            background: #4361ee;
+            bottom: -100px;
+            left: -80px;
+            animation-delay: -7s;
+        }
+
+        @keyframes floatBlob {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -40px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, 30px) scale(0.9);
+            }
+        }
+
+        /* ====== رسالة نجاح ====== */
+        .success-box {
+            display: none;
+            text-align: center;
+            max-width: 520px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .success-box .card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 50px 40px 45px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .success-box .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #4361ee, #8b5cf6);
+        }
+
+        .success-box .icon-wrapper {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 25px;
+            position: relative;
+        }
+
+        .success-box .icon-bg {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulseIcon 2s infinite;
+        }
+
+        .success-box .icon-bg i {
+            font-size: 50px;
+            color: #10b981;
+        }
+
+        .success-box .ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid #10b981;
+            opacity: 0;
+            animation: ringPulse 2s infinite;
+        }
+
+        .success-box .ring:nth-child(1) {
+            width: 140px;
+            height: 140px;
+            top: -10px;
+            left: -10px;
+            animation-delay: 0s;
+        }
+
+        .success-box .ring:nth-child(2) {
+            width: 160px;
+            height: 160px;
+            top: -20px;
+            left: -20px;
+            animation-delay: 0.5s;
+        }
+
+        .success-box .ring:nth-child(3) {
+            width: 180px;
+            height: 180px;
+            top: -30px;
+            left: -30px;
+            animation-delay: 1s;
+        }
+
+        @keyframes pulseIcon {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes ringPulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .success-box h1 {
+            font-size: 32px;
+            font-weight: 900;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .success-box .subtitle {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .success-box .description {
+            font-size: 14px;
+            color: #9ca3af;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .success-box .description strong {
+            color: #10b981;
+        }
+
+        .success-box .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .success-box .btn {
+            padding: 14px 30px;
+            border-radius: 16px;
+            border: none;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .success-box .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .success-box .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .success-box .btn-secondary {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .success-box .btn-secondary:hover {
+            background: #e5e7eb;
+            transform: translateY(-3px);
+        }
+
+        .success-box .features {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .success-box .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .success-box .feature-item i {
+            color: #10b981;
+            font-size: 14px;
+        }
+
+        @media (max-width: 550px) {
+            .success-box .card {
+                padding: 35px 25px 30px;
+                border-radius: 32px;
+            }
+
+            .success-box h1 {
+                font-size: 24px;
+            }
+
+            .success-box .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .success-box .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <!-- شاشة التحميل -->
+    <div id="loadingScreen" class="loading-container">
+        <div class="spinner"></div>
+        <h2>🔄 جاري التحويل...</h2>
+        <p>جاري التحقق من الصلاحيات وتوجيهك للوحة التحكم</p>
+    </div>
+
+    <!-- صفحة نجاح (بدلاً من غير مصرح) -->
+    <div id="successBox" class="success-box" style="display: none;">
+        <div class="card">
+            <div class="icon-wrapper">
+                <div class="ring"></div>
+                <div class="ring"></div>
+                <div class="ring"></div>
+                <div class="icon-bg">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+            <h1>✅ مرحباً بك في لوحة التحكم</h1>
+            <p class="subtitle">تم التحقق من صلاحياتك بنجاح</p>
+            <p class="description">
+                <strong>🎯 جاري توجيهك:</strong> سيتم نقلك إلى لوحة التحكم الشخصية.<br>
+                ستظهر لك فقط الصلاحيات المتاحة لك حسب دورك الوظيفي.
+            </p>
+            <div class="btn-group">
+                <button onclick="goToDashboard()" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> الذهاب للوحة التحكم
+                </button>
+                <button onclick="window.location.href='profile.html'" class="btn btn-secondary">
+                    <i class="fas fa-user-cog"></i> الملف الشخصي
+                </button>
+            </div>
+            <div class="features">
+                <span class="feature-item"><i class="fas fa-shield-alt"></i> حساب آمن</span>
+                <span class="feature-item"><i class="fas fa-user-check"></i> صلاحيات مخصصة</span>
+                <span class="feature-item"><i class="fas fa-clock"></i> 24/7</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== الذهاب للـ Dashboard مباشرة ==========
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // ========== التحقق من الصلاحيات والتحويل ==========
+        function checkAndRedirect() {
+            var currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+            // لو مفيش مستخدم => روح login
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            console.log('👤 المستخدم:', currentUser.name);
+            console.log('🎯 الدور:', currentUser.role);
+            console.log('🆔 ID:', currentUser.id);
+
+            // ✅ أمين المخزن يروح الـ Dashboard مباشرة
+            if (currentUser.role === 'storekeeper') {
+                console.log('✅ أمين مخزن => يروح dashboard');
+                // إخفاء شاشة التحميل
+                document.getElementById('loadingScreen').style.display = 'none';
+                // عرض رسالة النجاح
+                document.getElementById('successBox').style.display = 'block';
+                // بعد 2 ثانية يروح للـ Dashboard
+                setTimeout(function() {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
+                return;
+            }
+
+            // ✅ المدير يروح الـ Dashboard
+            if (currentUser.role === 'admin') {
+                console.log('✅ مدير => يروح dashboard');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            // ✅ الكاشير يروح الـ POS
+            if (currentUser.role === 'cashier') {
+                console.log('✅ كاشير => يروح pos.html');
+                window.location.href = 'pos.html';
+                return;
+            }
+
+            // لو أي دور تاني => روح login
+            window.location.href = 'login.html';
+        }
+
+        // ========== تشغيل الصفحة ==========
+        document.addEventListener('DOMContentLoaded', function () {
+            // انتظر 1.5 ثانية عشان تظهر شاشة التحميل
+            setTimeout(function () {
+                checkAndRedirect();
+            }, 1500);
+        });
+
+        // ========== منع إعادة التوجيه المتكرر ==========
+        var redirecting = false;
+        window.addEventListener('beforeunload', function () {
+            redirecting = true;
+        });
+    </script>
+
+</body>
+
+</html>
