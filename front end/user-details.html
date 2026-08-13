@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل المستخدم - نظام إدارة المخازن</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="theme-engine.js"></script>
+    <link rel="stylesheet" href="common-styles.css">
+
+    <script src="config.js"></script>
+    <style>
+        /* ========== صفحة تفاصيل المستخدم - متوافقة مع تصميم الموقع ========== */
+
+        /* تأثيرات خلفية متحركة */
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
+            }
+        }
+
+        /* Profile Header - متوافق مع تصميم الموقع */
+        .profile-header {
+            background: linear-gradient(135deg, #4361ee 0%, #3730a3 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        /* أشكال خلفية متحركة */
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15), transparent);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .profile-header::after {
+            content: '';
+            position: absolute;
+            bottom: -150px;
+            left: -100px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        .profile-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .profile-avatar-large {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            object-fit: cover;
+            flex-shrink: 0;
+            transition: all 0.4s ease;
+        }
+
+        .profile-avatar-large:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-avatar-placeholder {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 60px;
+            font-weight: 800;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+            transition: all 0.4s ease;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-avatar-placeholder:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-info {
+            flex: 1;
+            color: white;
+        }
+
+        .profile-name {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .profile-role {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 600;
+        }
+
+        .profile-role i {
+            font-size: 18px;
+        }
+
+        .profile-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            color: white;
+            font-weight: 500;
+        }
+
+        .meta-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .meta-item i {
+            font-size: 16px;
+        }
+
+        /* Grid Layout */
+        .details-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        /* Info Card - متوافق مع باقي الموقع */
+        .info-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .info-card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .info-card-title i {
+            font-size: 22px;
+            color: #4361ee;
+        }
+
+        /* Info Items - متوافق مع الموقع */
+        .info-items {
+            display: grid;
+            gap: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .info-row:hover {
+            background: white;
+            border-color: #4361ee;
+            transform: translateX(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .info-row-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4361ee, #3730a3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-left: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .info-row:hover .info-row-icon {
+            transform: scale(1.05);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-row-content {
+            flex: 1;
+        }
+
+        .info-row-label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .info-row-value {
+            font-size: 16px;
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        /* Status Badge في الـ Info */
+        .status-badge-detail {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-badge-detail.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge-detail.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge-detail.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-badge-detail.suspended {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        /* Stats Cards - متوافق مع الموقع */
+        .stats-cards {
+            display: grid;
+            gap: 15px;
+        }
+
+        .stat-card-mini {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card-mini:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-card-mini i {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card-mini.sales {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-color: #10b981;
+        }
+
+        .stat-card-mini.sales i {
+            color: #10b981;
+        }
+
+        .stat-card-mini.purchases {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border-color: #3b82f6;
+        }
+
+        .stat-card-mini.purchases i {
+            color: #3b82f6;
+        }
+
+        .stat-card-mini.activity {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-color: #f59e0b;
+        }
+
+        .stat-card-mini.activity i {
+            color: #f59e0b;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1f2937;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        /* Activity Log - متوافق مع الموقع */
+        .activity-item {
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            border-right: 4px solid #4361ee;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .activity-item:hover {
+            background: white;
+            border-right-color: #3730a3;
+            transform: translateX(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .activity-action {
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .activity-action i {
+            color: #4361ee;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: #9ca3af;
+            white-space: nowrap;
+        }
+
+        .activity-description {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        /* Actions - متوافق مع الموقع */
+        .actions-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .action-btn-group {
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-btn.activate {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .action-btn.deactivate {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .action-btn.suspend {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+
+        .action-btn.delete {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .action-btn.reset-password {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .action-btn.send-notification {
+            background: linear-gradient(135deg, #4361ee, #3730a3);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                padding: 25px;
+                border-radius: 15px;
+            }
+
+            .profile-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-name {
+                font-size: 28px;
+            }
+
+            .profile-meta {
+                justify-content: center;
+            }
+
+            .profile-avatar-large,
+            .profile-avatar-placeholder {
+                width: 120px;
+                height: 120px;
+            }
+
+            .profile-avatar-placeholder {
+                font-size: 48px;
+            }
+
+            .info-card {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+        }
+
+        /* Dark Mode Support - DISABLED */
+        /* @media (prefers-color-scheme: dark) {
+            .info-card {
+                background: rgba(31, 41, 55, 0.95);
+                color: #f3f4f6;
+            }
+            
+            .info-row {
+                background: rgba(55, 65, 81, 0.5);
+            }
+        }*/
+
+        /* Force Light Mode - Override Dark Mode */
+        .info-card {
+            background: white !important;
+            color: #1f2937 !important;
+        }
+
+        .info-row {
+            background: white !important;
+        }
+
+        .activity-item {
+            background: white !important;
+        }
+
+        .actions-card {
+            background: white !important;
+        }
+
+        .stat-card-mini {
+            background: white !important;
+        }
+
+        .stat-card-mini.sales {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0) !important;
+        }
+
+        .stat-card-mini.purchases {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe) !important;
+        }
+
+        .stat-card-mini.activity {
+            background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+        }
+
+        /* ========== Top Bar Fixes & Standard Styling ========== */
+        .top-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #1f2937;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle:hover {
+            background: #f3f4f6;
+        }
+
+        @media (max-width: 992px) {
+            .menu-toggle {
+                display: flex;
+            }
+        }
+
+        .top-bar-title h2 {
+            font-size: 20px;
+            color: #1f2937;
+            font-weight: 700;
+        }
+
+        .top-bar-title p {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-back {
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #374151;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-back:hover {
+            background: #e5e7eb;
+            color: #111827;
+            transform: translateY(-2px);
+        }
+
+        .notifications {
+            position: relative;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .notifications:hover {
+            background: #f3f4f6;
+        }
+
+        .notifications i {
+            font-size: 20px;
+            color: #6b7280;
+        }
+
+        .notifications .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+
+        .user-info:hover {
+            background: #f3f4f6;
+        }
+
+        .user-avatar-top {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #4361ee;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            overflow: hidden;
+        }
+
+        .user-avatar-top img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name-top {
+            font-weight: 600;
+            color: #1f2937;
+        }
+    </style>
+    <!-- Professional Toast Notifications -->
+
+    <link rel="stylesheet" href="professional-toast.css">
+
+    <script src="professional-toast.js"></script>
+
+
+    <link rel="stylesheet" href="sidebar.css">
+</head>
+
+<body>
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-panel-header">
+            <h4><i class="fas fa-bell"></i> الإشعارات</h4>
+            <div>
+                <button onclick="markAllNotificationsRead()">تحديد الكل كمقروء</button>
+                <button onclick="clearAllNotifications()" style="margin-right: 8px;">مسح الكل</button>
+            </div>
+        </div>
+        <div class="notification-list" id="notificationList">
+            <div class="empty-notifications">لا توجد إشعارات</div>
+        </div>
+    </div>
+
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner"></i>
+            <p>جاري التحميل...</p>
+        </div>
+    </div>
+
+    <div class="app">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="top-bar-title">
+                    <h2><i class="fas fa-user-circle"></i> تفاصيل المستخدم</h2>
+                    <p id="currentDateTime"><i class="far fa-calendar-alt"></i> --:--:--</p>
+                </div>
+                <div class="top-bar-actions">
+                    <button class="btn-back" onclick="goBack()">
+                        <i class="fas fa-arrow-right"></i> رجوع
+                    </button>
+                    <div class="notifications" id="notificationsBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notificationBadge">0</span>
+                    </div>
+                    <div class="user-info" onclick="window.location.href='profile.html'" style="cursor: pointer;">
+                        <div class="user-avatar-top" id="topBarAvatar">
+                            <!-- هيتعبأ بالجافاسكريبت -->
+                        </div>
+                        <span class="user-name-top" id="userName">مدير النظام</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content">
+
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="profile-content">
+                        <div id="profileAvatar"></div>
+                        <div class="profile-info">
+                            <h1 class="profile-name" id="profileName">---</h1>
+                            <div class="profile-role" id="profileRole">
+                                <i class="fas fa-briefcase"></i>
+                                <span>---</span>
+                            </div>
+                            <div class="profile-meta">
+                                <div class="meta-item" id="metaStatus">
+                                    <i class="fas fa-circle"></i>
+                                    <span>---</span>
+                                </div>
+                                <div class="meta-item" id="metaActive">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>---</span>
+                                </div>
+                                <div class="meta-item" id="metaJoinDate">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>---</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Details Grid -->
+                <div class="details-grid">
+                    <!-- Right Column -->
+                    <div>
+                        <!-- معلومات الاتصال -->
+                        <div class="info-card">
+                            <h3 class="info-card-title">
+                                <i class="fas fa-address-card"></i>
+                                معلومات الاتصال
+                            </h3>
+                            <div class="info-items">
+                                <div class="info-row">
+                                    <div class="info-row-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="info-row-content">
+                                        <div class="info-row-label">البريد الإلكتروني</div>
+                                        <div class="info-row-value" id="userEmail">---</div>
+                                    </div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-row-icon">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <div class="info-row-content">
+                                        <div class="info-row-label">رقم الهاتف</div>
+                                        <div class="info-row-value" id="userPhone">---</div>
+                                    </div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-row-icon">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <div class="info-row-content">
+                                        <div class="info-row-label">العنوان</div>
+                                        <div class="info-row-value" id="userAddress">---</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- معلومات الحساب -->
+                        <div class="info-card" style="margin-top: 25px;">
+                            <h3 class="info-card-title">
+                                <i class="fas fa-user-shield"></i>
+                                معلومات الحساب
+                            </h3>
+                            <div class="info-items">
+                                <div class="info-row">
+                                    <div class="info-row-icon">
+                                        <i class="fas fa-id-badge"></i>
+                                    </div>
+                                    <div class="info-row-content">
+                                        <div class="info-row-label">رقم المستخدم</div>
+                                        <div class="info-row-value" id="userId">---</div>
+                                    </div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-row-icon">
+                                        <i class="fas fa-briefcase"></i>
+                                    </div>
+                                    <div class="info-row-content">
+                                        <div class="info-row-label">الوظيفة</div>
+                                        <div class="info-row-value" id="userRoleDetail">---</div>
+                                    </div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-row-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                    </div>
+                                    <div class="info-row-content">
+                                        <div class="info-row-label">حالة الحساب</div>
+                                        <div class="info-row-value" id="accountStatus">---</div>
+                                    </div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-row-icon">
+                                        <i class="fas fa-toggle-on"></i>
+                                    </div>
+                                    <div class="info-row-content">
+                                        <div class="info-row-label">حالة التفعيل</div>
+                                        <div class="info-row-value" id="activeStatus">---</div>
+                                    </div>
+                                </div>
+
+                                <div class="info-row">
+                                    <div class="info-row-icon">
+                                        <i class="fas fa-check-double"></i>
+                                    </div>
+                                    <div class="info-row-content">
+                                        <div class="info-row-label">حالة الموافقة</div>
+                                        <div class="info-row-value" id="approvalStatus">---</div>
+                                    </div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-row-icon">
+                                        <i class="fas fa-calendar-plus"></i>
+                                    </div>
+                                    <div class="info-row-content">
+                                        <div class="info-row-label">تاريخ التسجيل</div>
+                                        <div class="info-row-value" id="createdDate">---</div>
+                                    </div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-row-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="info-row-content">
+                                        <div class="info-row-label">آخر تسجيل دخول</div>
+                                        <div class="info-row-value" id="lastLogin">---</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- سجل الأنشطة -->
+                        <div class="info-card" style="margin-top: 25px;">
+                            <h3 class="info-card-title">
+                                <i class="fas fa-history"></i>
+                                آخر الأنشطة
+                            </h3>
+                            <div id="activityLog">
+                                <div class="empty-state">
+                                    <i class="fas fa-inbox"></i>
+                                    <p>لا توجد أنشطة مسجلة</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Left Column -->
+                    <div>
+                        <!-- الإحصائيات -->
+                        <div class="info-card">
+                            <h3 class="info-card-title">
+                                <i class="fas fa-chart-line"></i>
+                                إحصائيات النشاط
+                            </h3>
+                            <div class="stats-cards">
+                                <div class="stat-card-mini sales">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    <span class="stat-value" id="salesCount">0</span>
+                                    <span class="stat-label">عمليات البيع</span>
+                                </div>
+                                <div class="stat-card-mini purchases">
+                                    <i class="fas fa-boxes"></i>
+                                    <span class="stat-value" id="purchasesCount">0</span>
+                                    <span class="stat-label">عمليات الشراء</span>
+                                </div>
+                                <div class="stat-card-mini activity">
+                                    <i class="fas fa-tasks"></i>
+                                    <span class="stat-value" id="activityCount">0</span>
+                                    <span class="stat-label">إجمالي الأنشطة</span>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- الإجراءات -->
+                        <div class="actions-card" style="margin-top: 25px;">
+                            <h3 class="info-card-title">
+                                <i class="fas fa-cog"></i>
+                                الإجراءات
+                            </h3>
+                            <div class="action-btn-group" id="actionButtons">
+                                <!-- سيتم ملؤها ديناميكياً -->
+                            </div>
+                        </div>
+
+                        <!-- معلومات إضافية -->
+                        <div class="info-card" style="margin-top: 25px;">
+                            <h3 class="info-card-title">
+                                <i class="fas fa-info-circle"></i>
+                                معلومات إضافية
+                            </h3>
+                            <div class="info-items">
+                                <div class="info-row">
+                                    <div class="info-row-icon">
+                                        <i class="fas fa-globe"></i>
+                                    </div>
+                                    <div class="info-row-content">
+                                        <div class="info-row-label">عنوان IP الأخير</div>
+                                        <div class="info-row-value" id="lastIp">---</div>
+                                    </div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-row-icon">
+                                        <i class="fas fa-desktop"></i>
+                                    </div>
+                                    <div class="info-row-content">
+                                        <div class="info-row-label">آخر جهاز</div>
+                                        <div class="info-row-value" id="lastDevice">---</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+
+    <script src="config.js"></script>
+    <script src="professional-toast.js"></script>
+    <script src="check-permission.js"></script>
+    <script src="sidebar.js"></script>
+
+    <script>
+        // المتغيرات العامة
+        let currentUserData = null;
+        let currentUserId = null;
+
+        // ترجمة الأدوار الوظيفية
+        const rolesMap = {
+            'cashier': 'محاسب',
+            'storekeeper': 'أمين مخزن',
+            'reviewer': 'مراجع',
+            'admin': 'مدير النظام'
+        };
+
+        // عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1. التحقق من صلاحيات الدخول
+            const loggedUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!loggedUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // التحقق من صلاحية عرض تفاصيل المستخدمين
+            const canView = checkPermission(loggedUser.id, 'users.view', loggedUser.role);
+            if (!canView) {
+                if (typeof showProfessionalToast === 'function') {
+                    showProfessionalToast('⛔ ليس لديك صلاحية الوصول لهذه الصفحة', 'error');
+                }
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
+                return;
+            }
+
+            // 2. تحديث الوقت والمستخدم
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            if (loggedUser.name) {
+                const userNameEl = document.getElementById('userName');
+                if (userNameEl) userNameEl.textContent = loggedUser.name;
+            }
+
+            // 3. استخراج معرف المستخدم من URL
+            const urlParams = new URLSearchParams(window.location.search);
+            currentUserId = urlParams.get('id');
+
+            if (!currentUserId) {
+                showProfessionalToast('لم يتم اختيار مستخدم لعرض تفاصيله', 'warning');
+                setTimeout(() => { window.location.href = 'manage-accounts.html'; }, 1500);
+                return;
+            }
+
+            // 4. أحداث القائمة الجانبية والإشعارات
+            const menuToggle = document.getElementById('menuToggle');
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function () {
+                    const sidebar = document.getElementById('sidebar');
+                    if (sidebar) sidebar.classList.toggle('open');
+                });
+            }
+
+            const notifBtn = document.getElementById('notificationsBtn');
+            const notifPanel = document.getElementById('notificationPanel');
+            if (notifBtn && notifPanel) {
+                notifBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    notifPanel.classList.toggle('active');
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!notifPanel.contains(e.target) && !notifBtn.contains(e.target)) {
+                        notifPanel.classList.remove('active');
+                    }
+                });
+            }
+
+            // 5. تحميل تفاصيل المستخدم وإحصائياته وسجل نشاطاته
+            loadUserDetails();
+            loadUserStats();
+            loadUserActivity();
+        });
+
+        // العودة للصفحة السابقة
+        function goBack() {
+            if (document.referrer && document.referrer.includes(window.location.hostname)) {
+                window.history.back();
+            } else {
+                window.location.href = 'manage-accounts.html';
+            }
+        }
+
+        // تحديث الوقت
+        function updateDateTime() {
+            const now = new Date();
+            const timeEl = document.getElementById('currentDateTime');
+            if (timeEl) {
+                timeEl.innerHTML = `<i class="far fa-calendar-alt"></i> ${now.toLocaleString('ar-EG')}`;
+            }
+        }
+
+        // إظهار/إخفاء مؤشر التحميل
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.style.display = show ? 'flex' : 'none';
+            }
+        }
+
+        // جلب تفاصيل المستخدم
+        async function loadUserDetails() {
+            showLoading(true);
+            try {
+                const apiUrl = window.API_URL || 'http://localhost:5000/api';
+                const fetchFunc = window.authenticatedFetch || fetch;
+
+                const response = await fetchFunc(`${apiUrl}/users/${currentUserId}`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    currentUserData = result.data;
+                    renderUserDetails(currentUserData);
+                } else {
+                    showProfessionalToast(result.message || 'فشل جلب تفاصيل المستخدم', 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching user details:', error);
+                showProfessionalToast('حدث خطأ في الاتصال بالسيرفر', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // عرض تفاصيل المستخدم بالواجهة
+        function renderUserDetails(user) {
+            const name = user.name || 'بدون اسم';
+            const email = user.email || '---';
+            const roleText = rolesMap[user.role] || user.role || 'غير محدد';
+            const firstChar = name.charAt(0).toUpperCase();
+
+            // الهيدر
+            const profileAvatar = document.getElementById('profileAvatar');
+            if (profileAvatar) {
+                if (user.profilePicture || user.profile_picture) {
+                    const imgUrl = user.profilePicture || user.profile_picture;
+                    const fullUrl = imgUrl.startsWith('http') 
+                        ? imgUrl 
+                        : `${window.location.origin}${imgUrl}?t=${Date.now()}`;
+                    
+                    profileAvatar.innerHTML = `<img src="${fullUrl}" class="profile-avatar-large" alt="${name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'profile-avatar-placeholder\\'>${firstChar}</div>'">`;
+                } else {
+                    profileAvatar.innerHTML = `<div class="profile-avatar-placeholder">${firstChar}</div>`;
+                }
+            }
+
+            document.getElementById('profileName').textContent = name;
+            document.getElementById('profileRole').querySelector('span').textContent = roleText;
+
+            const status = (user.account_status || '').toLowerCase();
+            const isApproved = Boolean(user.is_approved);
+            const isActive = Boolean(user.is_active);
+
+            // حالة الحساب
+            let statusText = 'في الانتظار';
+            if (status === 'rejected') statusText = 'مرفوض';
+            else if (status === 'suspended') statusText = 'موقوف';
+            else if (status === 'active' || isApproved) statusText = 'مقبول ونشط';
+
+            document.getElementById('metaStatus').querySelector('span').textContent = `الحالة: ${statusText}`;
+            document.getElementById('metaActive').querySelector('span').textContent = isActive ? 'مفعل بريدياً' : 'غير مفعل بريدياً';
+
+            const createdDate = user.created_at
+                ? new Date(user.created_at).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })
+                : 'غير محدد';
+            document.getElementById('metaJoinDate').querySelector('span').textContent = `التسجيل: ${createdDate}`;
+
+            // معلومات الاتصال
+            document.getElementById('userEmail').textContent = email;
+            document.getElementById('userPhone').textContent = user.phone || 'غير متوفر';
+            document.getElementById('userAddress').textContent = user.address || 'غير متوفر';
+
+            // معلومات الحساب
+            document.getElementById('userId').textContent = `#${user.id}`;
+            document.getElementById('userRoleDetail').textContent = roleText;
+            document.getElementById('accountStatus').textContent = statusText;
+            document.getElementById('activeStatus').textContent = isActive ? 'نشط (مفعل)' : 'غير نشط';
+            document.getElementById('approvalStatus').textContent = isApproved ? 'معتمد ومقبول' : 'بانتظار موافقة المدير';
+            document.getElementById('createdDate').textContent = createdDate;
+            document.getElementById('lastLogin').textContent = user.last_login || 'غير مسجل مؤخراً';
+
+            // معلومات إضافية
+            document.getElementById('lastIp').textContent = user.last_ip || 'غير متاح';
+            document.getElementById('lastDevice').textContent = user.last_device || 'متصفح ويب';
+
+            // بناء أزرار الإجراءات
+            renderActionButtons(user);
+        }
+
+        // بناء الأزرار التفاعلية للإجراءات
+        function renderActionButtons(user) {
+            const container = document.getElementById('actionButtons');
+            if (!container) return;
+
+            const status = (user.account_status || '').toLowerCase();
+            const isApproved = Boolean(user.is_approved);
+
+            let html = '';
+
+            if (status === 'pending' || (!isApproved && status !== 'rejected' && status !== 'suspended')) {
+                html += `
+                    <button class="btn btn-approve" onclick="approveUser('${user.email}')" style="background:linear-gradient(135deg,#10b981,#059669); color:white; padding:10px 18px; border-radius:10px; border:none; cursor:pointer; font-weight:bold; width:100%; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                        <i class="fas fa-check"></i> موافقة وتفعيل الحساب
+                    </button>
+                    <button class="btn btn-reject" onclick="rejectUser('${user.email}')" style="background:linear-gradient(135deg,#ef4444,#dc2626); color:white; padding:10px 18px; border-radius:10px; border:none; cursor:pointer; font-weight:bold; width:100%; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                        <i class="fas fa-times"></i> رفض الطلب
+                    </button>
+                `;
+            } else if (status === 'active' || isApproved) {
+                html += `
+                    <button class="btn btn-warning" onclick="suspendUser('${user.email}')" style="background:linear-gradient(135deg,#f59e0b,#d97706); color:white; padding:10px 18px; border-radius:10px; border:none; cursor:pointer; font-weight:bold; width:100%; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                        <i class="fas fa-ban"></i> إيقاف الحساب مؤقتاً
+                    </button>
+                `;
+            } else if (status === 'suspended') {
+                html += `
+                    <button class="btn btn-approve" onclick="activateUser('${user.email}')" style="background:linear-gradient(135deg,#10b981,#059669); color:white; padding:10px 18px; border-radius:10px; border:none; cursor:pointer; font-weight:bold; width:100%; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                        <i class="fas fa-unlock"></i> إعادة تفعيل الحساب
+                    </button>
+                `;
+            }
+
+            const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+            const isSelf = (user.id && user.id == currentUser.id) || (user.email && user.email.toLowerCase() === (currentUser.email || '').toLowerCase());
+
+            if (!isSelf) {
+                html += `
+                    <button class="btn btn-danger" onclick="deleteUser(${user.id}, '${user.name}')" style="background:#fee2e2; color:#ef4444; padding:10px 18px; border-radius:10px; border:1px solid #fecaca; cursor:pointer; font-weight:bold; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
+                        <i class="fas fa-trash-alt"></i> حذف الحساب نهائياً
+                    </button>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // جلب إحصائيات المستخدم
+        async function loadUserStats() {
+            try {
+                const apiUrl = window.API_URL || 'http://localhost:5000/api';
+                const fetchFunc = window.authenticatedFetch || fetch;
+
+                const response = await fetchFunc(`${apiUrl}/users/${currentUserId}/stats`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    document.getElementById('salesCount').textContent = result.data.sales || 0;
+                    document.getElementById('purchasesCount').textContent = result.data.purchases || 0;
+                    document.getElementById('activityCount').textContent = result.data.activities || 0;
+                }
+            } catch (error) {
+                console.error('Error fetching user stats:', error);
+            }
+        }
+
+        // جلب سجل أنشطة المستخدم
+        async function loadUserActivity() {
+            try {
+                const apiUrl = window.API_URL || 'http://localhost:5000/api';
+                const fetchFunc = window.authenticatedFetch || fetch;
+
+                const response = await fetchFunc(`${apiUrl}/users/${currentUserId}/activity`);
+                const result = await response.json();
+
+                const container = document.getElementById('activityLog');
+                if (!container) return;
+
+                if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+                    let html = '<div class="activity-timeline" style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">';
+
+                    result.data.forEach(item => {
+                        const dateStr = item.date || item.timestamp || item.created_at
+                            ? new Date(item.date || item.timestamp || item.created_at).toLocaleString('ar-EG')
+                            : '---';
+                        const actionText = item.action || item.description || 'نشاط';
+
+                        html += `
+                            <div style="background:#f8fafc; padding:10px 14px; border-radius:10px; border-right:3px solid #4361ee;">
+                                <div style="font-size:13px; font-weight:600; color:#1e293b;">${actionText}</div>
+                                <div style="font-size:11px; color:#64748b; margin-top:4px;"><i class="far fa-clock"></i> ${dateStr}</div>
+                            </div>
+                        `;
+                    });
+
+                    html += '</div>';
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state" style="padding:20px; text-align:center;">
+                            <i class="fas fa-inbox" style="font-size:32px; color:#cbd5e1; margin-bottom:8px;"></i>
+                            <p style="color:#64748b; font-size:13px;">لا توجد أنشطة مسجلة لهذا المستخدم</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error fetching user activity:', error);
+            }
+        }
+
+        // الأفعال (موافقة، رفض، إيقاف، تفعيل، حذف)
+
+        async function approveUser(email) {
+            const adminUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+            showLoading(true);
+            try {
+                const apiUrl = window.API_URL || 'http://localhost:5000/api';
+                const fetchFunc = window.authenticatedFetch || fetch;
+
+                const response = await fetchFunc(`${apiUrl}/approve-account`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, approved: true, adminName: adminUser.name || 'المدير' })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showProfessionalToast('🎉 تمت الموافقة على الحساب وتفعيله بنجاح', 'success');
+                    await loadUserDetails();
+                } else {
+                    showProfessionalToast(result.message || 'حدث خطأ أثناء الموافقة', 'error');
+                }
+            } catch (e) {
+                showProfessionalToast('حدث خطأ في الاتصال بالسيرفر', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function rejectUser(email) {
+            if (!confirm('هل أنت تأكد من رفض هذا الطلب؟')) return;
+            const adminUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+            showLoading(true);
+            try {
+                const apiUrl = window.API_URL || 'http://localhost:5000/api';
+                const fetchFunc = window.authenticatedFetch || fetch;
+
+                const response = await fetchFunc(`${apiUrl}/approve-account`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, approved: false, adminName: adminUser.name || 'المدير' })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showProfessionalToast('تم رفض الطلب بنجاح', 'warning');
+                    await loadUserDetails();
+                } else {
+                    showProfessionalToast(result.message || 'حدث خطأ', 'error');
+                }
+            } catch (e) {
+                showProfessionalToast('حدث خطأ في الاتصال بالسيرفر', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function suspendUser(email) {
+            if (!confirm('هل أنت تأكد من إيقاف هذا الحساب؟')) return;
+            showLoading(true);
+            try {
+                const apiUrl = window.API_URL || 'http://localhost:5000/api';
+                const fetchFunc = window.authenticatedFetch || fetch;
+
+                const response = await fetchFunc(`${apiUrl}/suspend-account`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showProfessionalToast('تم إيقاف الحساب بنجاح', 'warning');
+                    await loadUserDetails();
+                } else {
+                    showProfessionalToast(result.message || 'حدث خطأ', 'error');
+                }
+            } catch (e) {
+                showProfessionalToast('حدث خطأ في الاتصال بالسيرفر', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function activateUser(email) {
+            showLoading(true);
+            try {
+                const apiUrl = window.API_URL || 'http://localhost:5000/api';
+                const fetchFunc = window.authenticatedFetch || fetch;
+
+                const response = await fetchFunc(`${apiUrl}/activate-account`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showProfessionalToast('تم تفعيل الحساب بنجاح', 'success');
+                    await loadUserDetails();
+                } else {
+                    showProfessionalToast(result.message || 'حدث خطأ', 'error');
+                }
+            } catch (e) {
+                showProfessionalToast('حدث خطأ في الاتصال بالسيرفر', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function deleteUser(id, name) {
+            const password = prompt(`تأكيد حذف حساب (${name}): أدخل كلمة مرور المدير لتأكيد الحذف النهائي:`);
+            if (!password) return;
+
+            const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+            const adminEmail = currentUser.email;
+
+            showLoading(true);
+            try {
+                const apiUrl = window.API_URL || 'http://localhost:5000/api';
+                const fetchFunc = window.authenticatedFetch || fetch;
+
+                const response = await fetchFunc(`${apiUrl}/auth/users/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ adminEmail, adminPassword: password })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showProfessionalToast('🎉 تم حذف الحساب بنجاح', 'success');
+                    setTimeout(() => { window.location.href = 'manage-accounts.html'; }, 1000);
+                } else {
+                    showProfessionalToast(result.message || 'كلمة المرور غير صحيحة', 'error');
+                }
+            } catch (e) {
+                showProfessionalToast('حدث خطأ في الاتصال بالسيرفر', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1746 @@
+﻿<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الصلاحيات المتقدمة - نظام إدارة المخازن</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="theme-engine.js"></script>
+    <link rel="stylesheet" href="common-styles.css">
+    <link rel="stylesheet" href="professional-toast.css">
+    <link rel="stylesheet" href="sidebar.css">
+    <style>
+        /* ============================================================
+           🎯 إدارة الصلاحيات - تصميم احترافي
+           ============================================================ */
+
+        .page-content {
+            padding: 30px;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        /* ===== INFO BOX ===== */
+        .info-box {
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
+            border-right: 4px solid #4361ee;
+            padding: 18px 22px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .info-box i {
+            font-size: 24px;
+            color: #4361ee;
+            margin-top: 2px;
+        }
+
+        .info-box-content {
+            flex: 1;
+        }
+
+        .info-box-content h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 4px;
+        }
+
+        .info-box-content p {
+            font-size: 13px;
+            color: #1e40af;
+            line-height: 1.7;
+        }
+
+        /* ===== USERS GRID ===== */
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .user-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .user-card:hover {
+            border-color: #4361ee;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.12);
+        }
+
+        .user-card.selected {
+            border-color: #4361ee;
+            background: #eff6ff;
+            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.15);
+        }
+
+        .user-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 20px;
+            height: 20px;
+            background: #4361ee;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            box-shadow: 0 2px 10px rgba(67, 97, 238, 0.3);
+        }
+
+        .user-card .admin-lock {
+            font-size: 14px;
+            color: #ef4444;
+            margin-right: auto;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            position: absolute;
+            top: 6px;
+            left: 6px;
+        }
+
+        .status-dot.active {
+            background: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+
+        .status-dot.pending {
+            background: #f59e0b;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.inactive {
+            background: #ef4444;
+        }
+
+        .user-avatar-small {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .user-avatar-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-card-info .name {
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 13px;
+        }
+
+        .user-card-info .email {
+            font-size: 10px;
+            color: #6b7280;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-card-info .role-badge {
+            font-size: 9px;
+            padding: 2px 10px;
+            border-radius: 12px;
+            background: #e5e7eb;
+            color: #374151;
+            display: inline-block;
+            margin-top: 2px;
+            font-weight: 600;
+        }
+
+        .user-card-info .role-badge.admin {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .user-card-info .role-badge.storekeeper {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .user-card-info .role-badge.cashier {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        /* ===== PERMISSIONS CARD ===== */
+        .permissions-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            display: none;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .permissions-card.active {
+            display: block;
+        }
+
+        .permissions-header {
+            padding: 18px 24px;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-bottom: 2px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .permissions-header .user-info-selected {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .permissions-header .user-info-selected .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 800;
+            overflow: hidden;
+        }
+
+        .permissions-header .user-info-selected .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .permissions-header .user-info-selected .details .name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .permissions-header .user-info-selected .details .role {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .permissions-header .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .permissions-header .actions .btn {
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: none;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .permissions-header .actions .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: #4361ee;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #1f2937;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .btn-outline:hover {
+            border-color: #4361ee;
+            color: #4361ee;
+        }
+
+        /* ===== PERMISSIONS BODY ===== */
+        .permissions-body {
+            padding: 22px;
+        }
+
+        /* ===== STATS BAR ===== */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .stat-item:hover {
+            border-color: #4361ee;
+            transform: translateY(-2px);
+        }
+
+        .stat-item .number {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1f2937;
+        }
+
+        .stat-item .number.green {
+            color: #10b981;
+        }
+
+        .stat-item .number.red {
+            color: #ef4444;
+        }
+
+        .stat-item .number.blue {
+            color: #4361ee;
+        }
+
+        .stat-item .number.orange {
+            color: #f59e0b;
+        }
+
+        .stat-item .label {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        /* ===== QUICK ACTIONS ===== */
+        .quick-actions-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .quick-actions-bar .btn {
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: none;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .quick-actions-bar .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .quick-actions-bar .btn-sm {
+            background: white;
+            color: #1f2937;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .quick-actions-bar .btn-sm:hover {
+            border-color: #4361ee;
+            color: #4361ee;
+        }
+
+        .quick-actions-bar .btn-sm.primary {
+            background: #4361ee;
+            color: white;
+            border-color: #4361ee;
+        }
+
+        .quick-actions-bar .btn-sm.primary:hover {
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .quick-actions-bar .search-input {
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 12px;
+            width: 160px;
+            display: none;
+            transition: all 0.3s;
+        }
+
+        .quick-actions-bar .search-input:focus {
+            border-color: #4361ee;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .quick-actions-bar .search-input.show {
+            display: block;
+        }
+
+        /* ===== PERMISSIONS GRID ===== */
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .permission-category {
+            background: #f9fafb;
+            border-radius: 12px;
+            border: 1.5px solid #e5e7eb;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .permission-category:hover {
+            border-color: #4361ee;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-header:hover {
+            background: #f8fafc;
+        }
+
+        .category-header .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+        }
+
+        .category-header .title {
+            flex: 1;
+            font-weight: 700;
+            font-size: 14px;
+            color: #1f2937;
+        }
+
+        .category-header .count {
+            font-size: 11px;
+            color: #6b7280;
+            background: #f1f5f9;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .category-header .toggle-icon {
+            color: #6b7280;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .category-header .toggle-icon.open {
+            transform: rotate(180deg);
+        }
+
+        .category-items {
+            padding: 8px 12px;
+        }
+
+        .category-items.collapsed {
+            display: none;
+        }
+
+        /* ===== PERMISSION ITEM ===== */
+        .permission-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .permission-item:hover {
+            border-color: #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .permission-item .info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .permission-item .info i {
+            font-size: 13px;
+            color: #6b7280;
+            width: 18px;
+            text-align: center;
+        }
+
+        .permission-item .info .name {
+            font-size: 12px;
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .permission-item .info .desc {
+            font-size: 10px;
+            color: #6b7280;
+            margin-right: 6px;
+            display: none;
+        }
+
+        .permission-item .info .desc.show {
+            display: inline;
+        }
+
+        /* ===== TOGGLE SWITCH - النسخة المصححة ===== */
+        .toggle-switch {
+            position: relative;
+            width: 42px;
+            height: 22px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: 0.3s;
+            border-radius: 22px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+        }
+
+        .toggle-switch input:checked+.toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .toggle-switch input:disabled+.toggle-slider {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .permission-item.disabled .info {
+            opacity: 0.5;
+        }
+
+        .permission-item.disabled .toggle-switch {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===== SAVE BAR ===== */
+        .save-bar {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 2px solid #e5e7eb;
+            flex-wrap: wrap;
+        }
+
+        .save-bar .btn {
+            padding: 10px 24px;
+            border-radius: 10px;
+            border: none;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .save-bar .btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .save-bar .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .save-bar .btn-success:hover {
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .save-bar .btn-outline {
+            background: transparent;
+            color: #1f2937;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .save-bar .btn-outline:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+        }
+
+        /* ============================================================
+           📱 RESPONSIVE
+           ============================================================ */
+
+        @media (max-width: 1200px) {
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .users-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+
+            .permissions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-toggle {
+                display: flex !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-content {
+                padding: 15px;
+            }
+
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+
+            .permissions-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .permissions-header .actions {
+                justify-content: center;
+            }
+
+            .save-bar {
+                flex-direction: column;
+            }
+
+            .save-bar .btn {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .users-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions-bar {
+                justify-content: center;
+            }
+
+            .quick-actions-bar .search-input {
+                width: 100%;
+            }
+
+            .info-box {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== NOTIFICATION PANEL ===== -->
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-panel-header">
+            <h4><i class="fas fa-bell"></i> الإشعارات</h4>
+            <div>
+                <button onclick="markAllNotificationsRead()">تحديد الكل كمقروء</button>
+                <button onclick="clearAllNotifications()" style="margin-right: 8px;">مسح الكل</button>
+            </div>
+        </div>
+        <div class="notification-list" id="notificationList">
+            <div class="empty-notifications">لا توجد إشعارات</div>
+        </div>
+    </div>
+
+    <!-- ===== LOADING OVERLAY ===== -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner"></i>
+            <p>جاري تحميل الصلاحيات...</p>
+        </div>
+    </div>
+
+    <!-- ===== APP ===== -->
+    <div class="app">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="top-bar-title">
+                    <h2><i class="fas fa-shield-alt" style="color:#4361ee;"></i> إدارة الصلاحيات المتقدمة</h2>
+                    <p id="currentDateTime"><i class="far fa-calendar-alt"></i> جاري التحميل...</p>
+                </div>
+                <div class="top-bar-actions">
+                    <div class="notifications" id="notificationsBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notificationBadge">0</span>
+                    </div>
+                    <a href="profile.html" class="user-info">
+                        <div class="user-avatar-top" id="topBarAvatar">A</div>
+                        <span id="userName">مدير النظام</span>
+                    </a>
+                </div>
+            </header>
+
+            <div class="page-content">
+
+                <!-- ===== INFO BOX ===== -->
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <div class="info-box-content">
+                        <h4>🎯 نظام الصلاحيات المتقدم</h4>
+                        <p>
+                            اختر مستخدم من القائمة لتعديل صلاحياته. يمكنك تفعيل أو إلغاء أي صلاحية بشكل فردي.
+                            <strong>صلاحيات المدير (Admin) لا يمكن تعديلها</strong> لأنه يمتلك كل الصلاحيات افتراضياً.
+                            يتم حفظ التغييرات فوراً وتطبيقها على حساب المستخدم.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- ===== USERS GRID ===== -->
+                <div class="users-grid" id="usersGrid">
+                    <div class="empty-state" style="grid-column:1/-1;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <h3>جاري تحميل المستخدمين...</h3>
+                    </div>
+                </div>
+
+                <!-- ===== PERMISSIONS CARD ===== -->
+                <div class="permissions-card" id="permissionsCard">
+                    <div class="permissions-header">
+                        <div class="user-info-selected">
+                            <div class="avatar" id="selectedAvatar">أ</div>
+                            <div class="details">
+                                <div class="name" id="selectedName">---</div>
+                                <div class="role" id="selectedRole">---</div>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button class="btn btn-outline" onclick="resetToDefault()">
+                                <i class="fas fa-undo"></i> إعادة للافتراضي
+                            </button>
+                            <button class="btn btn-primary" onclick="copyRolePermissions()">
+                                <i class="fas fa-copy"></i> نسخ صلاحيات الدور
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="permissions-body">
+
+                        <!-- ===== STATS BAR ===== -->
+                        <div class="stats-bar" id="statsBar">
+                            <div class="stat-item">
+                                <div class="number blue" id="statTotal">0</div>
+                                <div class="label">إجمالي الصلاحيات</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="number green" id="statEnabled">0</div>
+                                <div class="label">مفعلة</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="number red" id="statDisabled">0</div>
+                                <div class="label">معطلة</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="number orange" id="statPercentage">0%</div>
+                                <div class="label">نسبة التفعيل</div>
+                            </div>
+                        </div>
+
+                        <!-- ===== QUICK ACTIONS ===== -->
+                        <div class="quick-actions-bar">
+                            <button class="btn btn-sm primary" onclick="selectAllPermissions()">
+                                <i class="fas fa-check-double"></i> تحديد الكل
+                            </button>
+                            <button class="btn btn-sm" onclick="deselectAllPermissions()">
+                                <i class="fas fa-times"></i> إلغاء الكل
+                            </button>
+                            <button class="btn btn-sm" onclick="selectByRole('storekeeper')">
+                                <i class="fas fa-warehouse"></i> صلاحيات أمين مخزن
+                            </button>
+                            <button class="btn btn-sm" onclick="selectByRole('cashier')">
+                                <i class="fas fa-cash-register"></i> صلاحيات كاشير
+                            </button>
+                            <button class="btn btn-sm" onclick="toggleSearch()">
+                                <i class="fas fa-search"></i> بحث
+                            </button>
+                            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن صلاحية..."
+                                oninput="filterPermissions(this.value)">
+                        </div>
+
+                        <!-- ===== PERMISSIONS GRID ===== -->
+                        <div class="permissions-grid" id="permissionsGrid">
+                            <div class="empty-state" style="grid-column:1/-1;">
+                                <i class="fas fa-inbox"></i>
+                                <h3>اختر مستخدم لعرض الصلاحيات</h3>
+                                <p>اختر مستخدم من القائمة أعلاه</p>
+                            </div>
+                        </div>
+
+                        <!-- ===== SAVE BAR ===== -->
+                        <div class="save-bar">
+                            <button class="btn btn-outline" onclick="cancelChanges()">
+                                <i class="fas fa-times"></i> إلغاء
+                            </button>
+                            <button class="btn btn-success" onclick="savePermissions()">
+                                <i class="fas fa-save"></i> حفظ الصلاحيات
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="clear-cache.js"></script>
+    <script src="config.js"></script>
+    <script src="professional-toast.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            // ============================================================
+            // CONFIGURATION
+            // ============================================================
+            const API_URL = window.API_URL || 'http://localhost:5000/api';
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+            // ============================================================
+            // PERMISSIONS DEFINITIONS
+            // ============================================================
+            const PERMISSIONS = {
+                'dashboard.view': { name: 'عرض لوحة التحكم', icon: 'fa-tachometer-alt', category: 'لوحة التحكم', desc: 'عرض لوحة التحكم والإحصائيات' },
+                'dashboard.stats': { name: 'عرض الإحصائيات', icon: 'fa-chart-line', category: 'لوحة التحكم', desc: 'عرض كروت الإحصائيات' },
+                'dashboard.charts': { name: 'الرسوم البيانية', icon: 'fa-chart-pie', category: 'لوحة التحكم', desc: 'عرض الرسوم البيانية والتحليلات' },
+                'dashboard.predictions': { name: 'توقعات المخزون', icon: 'fa-chart-simple', category: 'لوحة التحكم', desc: 'عرض توقعات المخزون الذكية' },
+                'dashboard.export': { name: 'تصدير التقارير', icon: 'fa-file-export', category: 'لوحة التحكم', desc: 'تصدير تقارير لوحة التحكم' },
+                'products.view': { name: 'عرض المنتجات', icon: 'fa-boxes', category: 'المنتجات', desc: 'عرض قائمة المنتجات والبحث' },
+                'products.add': { name: 'إضافة منتج', icon: 'fa-plus-circle', category: 'المنتجات', desc: 'إضافة منتج جديد' },
+                'products.edit': { name: 'تعديل المنتج', icon: 'fa-edit', category: 'المنتجات', desc: 'تعديل بيانات المنتج' },
+                'products.delete': { name: 'حذف منتج', icon: 'fa-trash-alt', category: 'المنتجات', desc: 'حذف منتج واحد' },
+                'products.delete_all': { name: 'حذف الكل', icon: 'fa-trash-alt', category: 'المنتجات', desc: 'حذف جميع المنتجات' },
+                'products.import': { name: 'استيراد Excel', icon: 'fa-file-import', category: 'المنتجات', desc: 'استيراد منتجات من Excel' },
+                'products.export': { name: 'تصدير Excel', icon: 'fa-file-export', category: 'المنتجات', desc: 'تصدير المنتجات إلى Excel' },
+                'prices.view': { name: 'عرض الأسعار', icon: 'fa-tags', category: 'الأسعار', desc: 'عرض أسعار المنتجات' },
+                'prices.edit': { name: 'تعديل الأسعار', icon: 'fa-edit', category: 'الأسعار', desc: 'تعديل سعر الشراء والبيع' },
+                'prices.bulk_edit': { name: 'تحديث جماعي', icon: 'fa-layer-group', category: 'الأسعار', desc: 'تحديث الأسعار بنسبة مئوية' },
+                'prices.import': { name: 'استيراد أسعار', icon: 'fa-file-import', category: 'الأسعار', desc: 'استيراد الأسعار من Excel' },
+                'prices.export': { name: 'تصدير الأسعار', icon: 'fa-file-export', category: 'الأسعار', desc: 'تصدير الأسعار إلى Excel' },
+                'prices.history': { name: 'سجل التغييرات', icon: 'fa-history', category: 'الأسعار', desc: 'عرض سجل تغييرات الأسعار' },
+                'stock.view': { name: 'عرض المخزون', icon: 'fa-warehouse', category: 'المخزون', desc: 'عرض المخزون الحالي والفلترة' },
+                'stock.adjust': { name: 'تعديل المخزون', icon: 'fa-sliders-h', category: 'المخزون', desc: 'تعديل كميات المخزون يدوياً' },
+                'stock.export': { name: 'تصدير المخزون', icon: 'fa-file-export', category: 'المخزون', desc: 'تصدير تقرير المخزون' },
+                'stock.import': { name: 'استيراد المخزون', icon: 'fa-file-import', category: 'المخزون', desc: 'استيراد المخزون من Excel' },
+                'stock.transfer': { name: 'تحويلات المخزون', icon: 'fa-exchange-alt', category: 'المخزون', desc: 'إدارة تحويلات المخزون' },
+                'locations.view': { name: 'عرض الأماكن', icon: 'fa-map-marker-alt', category: 'الأماكن', desc: 'عرض أماكن التخزين' },
+                'locations.add': { name: 'إضافة مكان', icon: 'fa-plus-circle', category: 'الأماكن', desc: 'إضافة مكان تخزين جديد' },
+                'locations.edit': { name: 'تعديل مكان', icon: 'fa-edit', category: 'الأماكن', desc: 'تعديل بيانات المكان' },
+                'locations.delete': { name: 'حذف مكان', icon: 'fa-trash-alt', category: 'الأماكن', desc: 'حذف مكان تخزين' },
+                'locations.manage': { name: 'إدارة الأماكن', icon: 'fa-tools', category: 'الأماكن', desc: 'الإدارة المتقدمة للأماكن' },
+                'sales.view': { name: 'عرض فواتير البيع', icon: 'fa-file-invoice', category: 'المبيعات', desc: 'عرض فواتير البيع والبحث' },
+                'sales.create': { name: 'إنشاء فاتورة بيع', icon: 'fa-plus-circle', category: 'المبيعات', desc: 'إنشاء فاتورة بيع جديدة' },
+                'sales.delete': { name: 'حذف فاتورة بيع', icon: 'fa-trash-alt', category: 'المبيعات', desc: 'حذف فاتورة بيع' },
+                'sales.print': { name: 'طباعة فاتورة', icon: 'fa-print', category: 'المبيعات', desc: 'طباعة فاتورة البيع' },
+                'sales.export': { name: 'تصدير فواتير', icon: 'fa-file-export', category: 'المبيعات', desc: 'تصدير فواتير البيع' },
+                'purchases.view': { name: 'عرض فواتير الشراء', icon: 'fa-file-invoice', category: 'المشتريات', desc: 'عرض فواتير الشراء والبحث' },
+                'purchases.create': { name: 'إنشاء فاتورة شراء', icon: 'fa-plus-circle', category: 'المشتريات', desc: 'إنشاء فاتورة شراء جديدة' },
+                'purchases.delete': { name: 'حذف فاتورة شراء', icon: 'fa-trash-alt', category: 'المشتريات', desc: 'حذف فاتورة شراء' },
+                'purchases.print': { name: 'طباعة فاتورة شراء', icon: 'fa-print', category: 'المشتريات', desc: 'طباعة فاتورة الشراء' },
+                'purchases.export': { name: 'تصدير فواتير شراء', icon: 'fa-file-export', category: 'المشتريات', desc: 'تصدير فواتير الشراء' },
+                'returns.view': { name: 'عرض المرتجعات', icon: 'fa-undo-alt', category: 'المرتجعات', desc: 'عرض قائمة المرتجعات' },
+                'returns.create': { name: 'إنشاء مرتجع', icon: 'fa-plus-circle', category: 'المرتجعات', desc: 'إنشاء مرتجع جديد' },
+                'returns.delete': { name: 'حذف مرتجع', icon: 'fa-trash-alt', category: 'المرتجعات', desc: 'حذف مرتجع' },
+                'returns.manage': { name: 'إدارة المرتجعات', icon: 'fa-tools', category: 'المرتجعات', desc: 'الإدارة المتقدمة للمرتجعات' },
+                'customers.view': { name: 'عرض العملاء', icon: 'fa-users', category: 'العملاء', desc: 'عرض قائمة العملاء' },
+                'customers.add': { name: 'إضافة عميل', icon: 'fa-user-plus', category: 'العملاء', desc: 'إضافة عميل جديد' },
+                'customers.edit': { name: 'تعديل عميل', icon: 'fa-edit', category: 'العملاء', desc: 'تعديل بيانات العميل' },
+                'customers.delete': { name: 'حذف عميل', icon: 'fa-trash-alt', category: 'العملاء', desc: 'حذف عميل' },
+                'customers.import': { name: 'استيراد عملاء', icon: 'fa-file-import', category: 'العملاء', desc: 'استيراد العملاء من Excel' },
+                'customers.export': { name: 'تصدير عملاء', icon: 'fa-file-export', category: 'العملاء', desc: 'تصدير العملاء إلى Excel' },
+                'customers.payments': { name: 'دفعات العملاء', icon: 'fa-hand-holding-usd', category: 'العملاء', desc: 'تسجيل دفعات العملاء' },
+                'customers.statement': { name: 'كشف حساب', icon: 'fa-file-invoice', category: 'العملاء', desc: 'عرض كشف حساب العميل' },
+                'customers.debts': { name: 'المديونيات', icon: 'fa-money-bill-wave', category: 'العملاء', desc: 'عرض مديونيات العملاء' },
+                'suppliers.view': { name: 'عرض الموردين', icon: 'fa-truck', category: 'الموردين', desc: 'عرض قائمة الموردين' },
+                'suppliers.add': { name: 'إضافة مورد', icon: 'fa-plus-circle', category: 'الموردين', desc: 'إضافة مورد جديد' },
+                'suppliers.edit': { name: 'تعديل مورد', icon: 'fa-edit', category: 'الموردين', desc: 'تعديل بيانات المورد' },
+                'suppliers.delete': { name: 'حذف مورد', icon: 'fa-trash-alt', category: 'الموردين', desc: 'حذف مورد' },
+                'suppliers.import': { name: 'استيراد موردين', icon: 'fa-file-import', category: 'الموردين', desc: 'استيراد الموردين من Excel' },
+                'suppliers.export': { name: 'تصدير موردين', icon: 'fa-file-export', category: 'الموردين', desc: 'تصدير الموردين إلى Excel' },
+                'attendance.view': { name: 'عرض الحضور', icon: 'fa-clipboard-list', category: 'الحضور', desc: 'عرض سجل الحضور والانصراف' },
+                'attendance.checkin': { name: 'تسجيل حضور', icon: 'fa-sign-in-alt', category: 'الحضور', desc: 'تسجيل حضور الموظفين' },
+                'attendance.checkout': { name: 'تسجيل انصراف', icon: 'fa-sign-out-alt', category: 'الحضور', desc: 'تسجيل انصراف الموظفين' },
+                'attendance.manage': { name: 'إدارة الحضور', icon: 'fa-tools', category: 'الحضور', desc: 'الإدارة المتقدمة للحضور' },
+                'attendance.export': { name: 'تصدير الحضور', icon: 'fa-file-export', category: 'الحضور', desc: 'تصدير تقارير الحضور' },
+                'treasury.view': { name: 'عرض الخزنة', icon: 'fa-money-bill-wave', category: 'الخزنة', desc: 'عرض حركات الخزنة' },
+                'treasury.deposit': { name: 'إيداع', icon: 'fa-arrow-down', category: 'الخزنة', desc: 'تسجيل إيداع في الخزنة' },
+                'treasury.withdraw': { name: 'صرف', icon: 'fa-arrow-up', category: 'الخزنة', desc: 'تسجيل صرف من الخزنة' },
+                'treasury.sales': { name: 'مبيعات قطاعي', icon: 'fa-cash-register', category: 'الخزنة', desc: 'تسجيل مبيعات قطاعي' },
+                'treasury.export': { name: 'تصدير الخزنة', icon: 'fa-file-export', category: 'الخزنة', desc: 'تصدير حركات الخزنة' },
+                'users.view': { name: 'عرض المستخدمين', icon: 'fa-users-cog', category: 'الحسابات', desc: 'عرض قائمة المستخدمين' },
+                'users.add': { name: 'إضافة مستخدم', icon: 'fa-user-plus', category: 'الحسابات', desc: 'إضافة مستخدم جديد' },
+                'users.edit': { name: 'تعديل مستخدم', icon: 'fa-edit', category: 'الحسابات', desc: 'تعديل بيانات المستخدم' },
+                'users.delete': { name: 'حذف مستخدم', icon: 'fa-trash-alt', category: 'الحسابات', desc: 'حذف مستخدم' },
+                'users.approve': { name: 'موافقة على طلبات', icon: 'fa-check-circle', category: 'الحسابات', desc: 'موافقة أو رفض طلبات التسجيل' },
+                'users.details': { name: 'تفاصيل المستخدم', icon: 'fa-id-card', category: 'الحسابات', desc: 'عرض تفاصيل المستخدم' },
+                'users.permissions': { name: 'إدارة الصلاحيات', icon: 'fa-shield-alt', category: 'الحسابات', desc: 'تعديل صلاحيات المستخدمين' },
+                'reports.view': { name: 'عرض التقارير', icon: 'fa-chart-bar', category: 'التقارير', desc: 'عرض جميع التقارير' },
+                'reports.export': { name: 'تصدير التقارير', icon: 'fa-file-export', category: 'التقارير', desc: 'تصدير التقارير' },
+                'reports.sales': { name: 'تقرير المبيعات', icon: 'fa-chart-line', category: 'التقارير', desc: 'عرض تقرير المبيعات' },
+                'reports.purchases': { name: 'تقرير المشتريات', icon: 'fa-chart-line', category: 'التقارير', desc: 'عرض تقرير المشتريات' },
+                'reports.profits': { name: 'تقرير الأرباح', icon: 'fa-coins', category: 'التقارير', desc: 'عرض تقرير الأرباح' },
+                'reports.products': { name: 'تقرير المنتجات', icon: 'fa-boxes', category: 'التقارير', desc: 'عرض تقرير المنتجات' },
+                'reports.movements': { name: 'تقرير الحركات', icon: 'fa-exchange-alt', category: 'التقارير', desc: 'عرض تقرير الحركات' },
+                'reports.manual': { name: 'تقرير يدوي', icon: 'fa-pen', category: 'التقارير', desc: 'إنشاء تقرير يدوي' },
+                'reports.saved': { name: 'تقارير محفوظة', icon: 'fa-folder-open', category: 'التقارير', desc: 'عرض التقارير المحفوظة' },
+                'audit.view': { name: 'عرض سجل الحركات', icon: 'fa-history', category: 'سجل الحركات', desc: 'عرض سجل الحركات والبحث' },
+                'audit.export': { name: 'تصدير سجل الحركات', icon: 'fa-file-export', category: 'سجل الحركات', desc: 'تصدير سجل الحركات' },
+                'profile.view': { name: 'عرض الملف الشخصي', icon: 'fa-user', category: 'الملف الشخصي', desc: 'عرض الملف الشخصي' },
+                'profile.edit': { name: 'تعديل الملف الشخصي', icon: 'fa-edit', category: 'الملف الشخصي', desc: 'تعديل بيانات الملف الشخصي' },
+                'profile.picture': { name: 'تغيير الصورة', icon: 'fa-camera', category: 'الملف الشخصي', desc: 'رفع أو حذف الصورة الشخصية' },
+                'profile.password': { name: 'تغيير كلمة المرور', icon: 'fa-lock', category: 'الملف الشخصي', desc: 'تغيير كلمة المرور' },
+                'backup.create': { name: 'نسخ احتياطي', icon: 'fa-database', category: 'النظام', desc: 'إنشاء نسخة احتياطية للبيانات' },
+                'data.delete': { name: 'حذف البيانات', icon: 'fa-trash-alt', category: 'النظام', desc: 'حذف البيانات (فقط للمدير)' },
+                'settings.edit': { name: 'إعدادات النظام', icon: 'fa-cog', category: 'النظام', desc: 'تعديل إعدادات النظام' }
+            };
+
+            // ============================================================
+            // STATE
+            // ============================================================
+            let allUsers = [];
+            let selectedUserId = null;
+            let userPermissions = {};
+            let originalPermissions = {};
+            let isLoading = false;
+
+            // ============================================================
+            // DOM REFS
+            // ============================================================
+            const $ = (id) => document.getElementById(id);
+            const loadingOverlay = $('loadingOverlay');
+            const usersGrid = $('usersGrid');
+            const permissionsCard = $('permissionsCard');
+            const permissionsGrid = $('permissionsGrid');
+            const selectedName = $('selectedName');
+            const selectedRole = $('selectedRole');
+            const selectedAvatar = $('selectedAvatar');
+            const statTotal = $('statTotal');
+            const statEnabled = $('statEnabled');
+            const statDisabled = $('statDisabled');
+            const statPercentage = $('statPercentage');
+
+            // ============================================================
+            // UTILITY FUNCTIONS
+            // ============================================================
+            function showLoading(show) {
+                loadingOverlay.classList.toggle('active', show);
+            }
+
+            function showToast(message, type) {
+                type = type || 'success';
+                if (typeof showProfessionalToast === 'function') {
+                    showProfessionalToast(message, type);
+                } else {
+                    alert(message);
+                }
+            }
+
+            function getRoleName(role) {
+                const roles = { 'admin': 'مدير النظام', 'storekeeper': 'أمين مخزن', 'cashier': 'كاشير' };
+                return roles[role] || role || 'مستخدم';
+            }
+
+            function getRoleClass(role) {
+                const classes = { 'admin': 'admin', 'storekeeper': 'storekeeper', 'cashier': 'cashier' };
+                return classes[role] || '';
+            }
+
+            function getInitials(name) {
+                if (!name) return 'أ';
+                return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            }
+
+            function getStatusClass(status) {
+                const classes = { 'active': 'active', 'pending': 'pending', 'rejected': 'inactive', 'suspended': 'inactive' };
+                return classes[status] || 'inactive';
+            }
+
+            // ============================================================
+            // SIDEBAR INIT
+            // ============================================================
+            function initSidebar() {
+                const menuToggle = document.getElementById('menuToggle');
+                if (menuToggle) {
+                    menuToggle.style.display = 'flex';
+                }
+            }
+
+            // ============================================================
+            // LOAD USERS
+            // ============================================================
+            async function loadUsers() {
+                showLoading(true);
+                try {
+                    const response = await fetch(API_URL + '/pending-accounts');
+                    const result = await response.json();
+
+                    if (result.success && Array.isArray(result.data)) {
+                        allUsers = result.data;
+                        renderUsers();
+                    } else {
+                        allUsers = [];
+                        renderUsers();
+                        showToast('لا توجد حسابات', 'info');
+                    }
+                } catch (error) {
+                    console.error('Error loading users:', error);
+                    showToast('حدث خطأ في جلب المستخدمين', 'error');
+                } finally {
+                    showLoading(false);
+                }
+            }
+
+            // ============================================================
+            // RENDER USERS
+            // ============================================================
+            function renderUsers() {
+                if (allUsers.length === 0) {
+                    usersGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1;">
+                        <i class="fas fa-users"></i>
+                        <h3>لا توجد حسابات</h3>
+                        <p>لم يتم العثور على أي مستخدمين في النظام</p>
+                    </div>
+                `;
+                    return;
+                }
+
+                let html = '';
+                allUsers.forEach(user => {
+                    const status = user.account_status || 'pending';
+                    const statusClass = getStatusClass(status);
+                    const initials = getInitials(user.name);
+                    const roleName = getRoleName(user.role);
+                    const roleClass = getRoleClass(user.role);
+                    const isSelected = selectedUserId === user.id;
+                    const isAdmin = user.role === 'admin';
+
+                    html += `
+                    <div class="user-card ${isSelected ? 'selected' : ''}" onclick="selectUser(${user.id})">
+                        <span class="status-dot ${statusClass}"></span>
+                        <div class="user-avatar-small">
+                            ${user.profile_picture ? `<img src="${user.profile_picture}" alt="${user.name}">` : initials}
+                        </div>
+                        <div class="user-card-info">
+                            <div class="name">${user.name || 'بدون اسم'}</div>
+                            <div class="email">${user.email || '---'}</div>
+                            <span class="role-badge ${roleClass}">${roleName}</span>
+                            ${isAdmin ? '<span class="admin-lock"><i class="fas fa-lock"></i></span>' : ''}
+                        </div>
+                    </div>
+                `;
+                });
+
+                usersGrid.innerHTML = html;
+            }
+
+            // ============================================================
+            // SELECT USER
+            // ============================================================
+            async function selectUser(userId) {
+                if (isLoading) return;
+
+                if (selectedUserId === userId) {
+                    selectedUserId = null;
+                    permissionsCard.classList.remove('active');
+                    renderUsers();
+                    return;
+                }
+
+                const user = allUsers.find(u => u.id === userId);
+                if (!user) return;
+
+                if (user.role === 'admin') {
+                    showToast('⚠️ صلاحيات المدير لا يمكن تعديلها', 'warning');
+                    return;
+                }
+
+                selectedUserId = userId;
+                renderUsers();
+                await loadUserPermissions(userId);
+            }
+
+            // ============================================================
+            // LOAD USER PERMISSIONS
+            // ============================================================
+            async function loadUserPermissions(userId) {
+                isLoading = true;
+                showLoading(true);
+
+                try {
+                    // ✅ إرسال Token مع الطلب
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        showToast('⚠️ لم يتم العثور على Token. يرجى تسجيل الدخول مرة أخرى', 'error');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 2000);
+                        return;
+                    }
+
+                    const response = await fetch(API_URL + '/user-permissions/' + userId, {
+                        headers: {
+                            'Authorization': 'Bearer ' + token
+                        }
+                    });
+
+                    // ✅ معالجة 401 Unauthorized
+                    if (response.status === 401) {
+                        showToast('⚠️ انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى', 'error');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 2000);
+                        return;
+                    }
+
+                    const result = await response.json();
+
+                    const user = allUsers.find(u => u.id === userId);
+                    if (user) {
+                        selectedName.textContent = user.name || 'مستخدم';
+                        selectedRole.textContent = getRoleName(user.role);
+                        selectedAvatar.textContent = getInitials(user.name);
+                    }
+
+                    if (result.success && result.data) {
+                        userPermissions = result.data;
+                    } else {
+                        userPermissions = {};
+                    }
+
+                    originalPermissions = JSON.parse(JSON.stringify(userPermissions));
+                    renderPermissions();
+                    updateStats();
+                    permissionsCard.classList.add('active');
+
+                } catch (error) {
+                    console.error('Error loading permissions:', error);
+                    showToast('حدث خطأ في تحميل الصلاحيات', 'error');
+                } finally {
+                    showLoading(false);
+                    isLoading = false;
+                }
+            }
+
+            // ============================================================
+            // RENDER PERMISSIONS
+            // ============================================================
+            function renderPermissions() {
+                const categories = {};
+                Object.keys(PERMISSIONS).forEach(key => {
+                    const perm = PERMISSIONS[key];
+                    if (!categories[perm.category]) {
+                        categories[perm.category] = [];
+                    }
+                    categories[perm.category].push({ id: key, ...perm });
+                });
+
+                let html = '';
+                let total = 0;
+                let enabled = 0;
+
+                Object.keys(categories).forEach(category => {
+                    const items = categories[category];
+                    let enabledCount = 0;
+
+                    items.forEach(item => {
+                        if (userPermissions[item.id] === true) {
+                            enabledCount++;
+                        }
+                    });
+
+                    html += `
+                    <div class="permission-category">
+                        <div class="category-header" onclick="toggleCategory(this)">
+                            <div class="icon"><i class="fas ${items[0]?.icon || 'fa-folder'}"></i></div>
+                            <span class="title">${category}</span>
+                            <span class="count">${enabledCount}/${items.length}</span>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="category-items">
+                `;
+
+                    items.forEach(item => {
+                        const isEnabled = userPermissions[item.id] === true;
+                        total++;
+                        if (isEnabled) enabled++;
+
+                        html += `
+                        <div class="permission-item" data-perm-id="${item.id}" data-name="${item.name}">
+                            <div class="info">
+                                <i class="fas ${item.icon || 'fa-circle'}"></i>
+                                <span class="name">${item.name}</span>
+                                <span class="desc">${item.desc}</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" 
+                                    ${isEnabled ? 'checked' : ''} 
+                                    onchange="togglePermission('${item.id}', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    `;
+                    });
+
+                    html += `
+                        </div>
+                    </div>
+                `;
+                });
+
+                permissionsGrid.innerHTML = html;
+                updateStats();
+            }
+
+            // ============================================================
+            // TOGGLE PERMISSION
+            // ============================================================
+            function togglePermission(permId, checked) {
+                if (isLoading) return;
+                userPermissions[permId] = checked;
+                updateStats();
+
+                const perm = PERMISSIONS[permId];
+                if (perm) {
+                    const category = perm.category;
+                    const items = document.querySelectorAll('.permission-category');
+                    items.forEach(cat => {
+                        const title = cat.querySelector('.title');
+                        if (title && title.textContent === category) {
+                            const count = cat.querySelector('.count');
+                            if (count) {
+                                const enabledItems = cat.querySelectorAll('.permission-item input:checked').length;
+                                const totalItems = cat.querySelectorAll('.permission-item').length;
+                                count.textContent = enabledItems + '/' + totalItems;
+                            }
+                        }
+                    });
+                }
+            }
+
+            // ============================================================
+            // UPDATE STATS
+            // ============================================================
+            function updateStats() {
+                const total = Object.keys(PERMISSIONS).length;
+                let enabled = 0;
+                Object.keys(userPermissions).forEach(key => {
+                    if (userPermissions[key] === true) enabled++;
+                });
+
+                statTotal.textContent = total;
+                statEnabled.textContent = enabled;
+                statDisabled.textContent = total - enabled;
+                statPercentage.textContent = total > 0 ? Math.round((enabled / total) * 100) + '%' : '0%';
+            }
+
+            // ============================================================
+            // TOGGLE CATEGORY
+            // ============================================================
+            function toggleCategory(header) {
+                const items = header.nextElementSibling;
+                const icon = header.querySelector('.toggle-icon');
+                if (items) {
+                    items.classList.toggle('collapsed');
+                    icon.classList.toggle('open');
+                }
+            }
+
+            // ============================================================
+            // TOGGLE SEARCH
+            // ============================================================
+            function toggleSearch() {
+                const input = document.getElementById('searchInput');
+                input.classList.toggle('show');
+                if (input.classList.contains('show')) {
+                    input.focus();
+                } else {
+                    input.value = '';
+                    filterPermissions('');
+                }
+            }
+
+            function filterPermissions(query) {
+                const items = document.querySelectorAll('.permission-item');
+                items.forEach(item => {
+                    const text = item.getAttribute('data-name') || item.textContent;
+                    item.style.display = text.includes(query) ? 'flex' : 'none';
+                });
+            }
+
+            // ============================================================
+            // QUICK ACTIONS
+            // ============================================================
+            function selectAllPermissions() {
+                if (!selectedUserId) {
+                    showToast('اختر مستخدم أولاً', 'warning');
+                    return;
+                }
+                Object.keys(PERMISSIONS).forEach(key => {
+                    userPermissions[key] = true;
+                });
+                renderPermissions();
+                showToast('✅ تم تفعيل جميع الصلاحيات', 'success');
+            }
+
+            function deselectAllPermissions() {
+                if (!selectedUserId) {
+                    showToast('اختر مستخدم أولاً', 'warning');
+                    return;
+                }
+                Object.keys(PERMISSIONS).forEach(key => {
+                    userPermissions[key] = false;
+                });
+                renderPermissions();
+                showToast('❌ تم إلغاء جميع الصلاحيات', 'info');
+            }
+
+            function selectByRole(role) {
+                if (!selectedUserId) {
+                    showToast('اختر مستخدم أولاً', 'warning');
+                    return;
+                }
+
+                const rolePermissions = {
+                    'storekeeper': [
+                        'dashboard.view', 'dashboard.stats',
+                        'products.view', 'products.add', 'products.edit',
+                        'stock.view', 'stock.adjust', 'stock.export', 'stock.transfer',
+                        'locations.view', 'locations.add', 'locations.edit', 'locations.manage',
+                        'purchases.view', 'purchases.create',
+                        'suppliers.view', 'suppliers.add', 'suppliers.edit',
+                        'customers.view', 'customers.payments', 'customers.statement',
+                        'attendance.view', 'attendance.checkin', 'attendance.checkout',
+                        'treasury.view',
+                        'reports.view', 'reports.export',
+                        'audit.view',
+                        'profile.view', 'profile.edit', 'profile.picture', 'profile.password'
+                    ],
+                    'cashier': [
+                        'dashboard.view',
+                        'products.view',
+                        'stock.view',
+                        'sales.view', 'sales.create', 'sales.print',
+                        'customers.view', 'customers.add',
+                        'attendance.view', 'attendance.checkin', 'attendance.checkout',
+                        'treasury.view', 'treasury.deposit', 'treasury.sales',
+                        'profile.view', 'profile.edit', 'profile.picture', 'profile.password'
+                    ]
+                };
+
+                const perms = rolePermissions[role] || [];
+                Object.keys(PERMISSIONS).forEach(key => {
+                    userPermissions[key] = perms.includes(key);
+                });
+                renderPermissions();
+                showToast('✅ تم تطبيق صلاحيات ' + getRoleName(role), 'success');
+            }
+
+            function resetToDefault() {
+                if (!selectedUserId) {
+                    showToast('اختر مستخدم أولاً', 'warning');
+                    return;
+                }
+                if (!confirm('هل تريد إعادة تعيين الصلاحيات إلى الإعدادات الافتراضية؟')) return;
+
+                const user = allUsers.find(u => u.id === selectedUserId);
+                if (user) {
+                    selectByRole(user.role);
+                    showToast('✅ تم إعادة تعيين الصلاحيات للافتراضي', 'success');
+                }
+            }
+
+            function copyRolePermissions() {
+                if (!selectedUserId) {
+                    showToast('اختر مستخدم أولاً', 'warning');
+                    return;
+                }
+
+                const user = allUsers.find(u => u.id === selectedUserId);
+                if (user) {
+                    selectByRole(user.role);
+                    showToast('✅ تم نسخ صلاحيات الدور ' + getRoleName(user.role), 'success');
+                }
+            }
+
+            function cancelChanges() {
+                if (!selectedUserId) return;
+                if (!confirm('هل تريد إلغاء التغييرات؟')) return;
+
+                userPermissions = JSON.parse(JSON.stringify(originalPermissions));
+                renderPermissions();
+                showToast('تم إلغاء التغييرات', 'info');
+            }
+
+            // ============================================================
+            // ✅ SAVE PERMISSIONS - النسخة المعدلة النهائية
+            // ============================================================
+            async function savePermissions() {
+                if (!selectedUserId) {
+                    showToast('اختر مستخدم أولاً', 'warning');
+                    return;
+                }
+
+                const user = allUsers.find(u => u.id === selectedUserId);
+                if (!user) return;
+
+                if (!confirm(`هل أنت متأكد من حفظ صلاحيات المستخدم "${user.name}"؟`)) return;
+
+                showLoading(true);
+
+                try {
+                    const response = await fetch(API_URL + '/save-user-permissions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userId: selectedUserId,
+                            userName: user.name,
+                            permissions: userPermissions,
+                            updatedBy: currentUser.name || 'المدير'
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // ✅ حفظ في localStorage
+                        localStorage.setItem('user_permissions_' + selectedUserId, JSON.stringify(userPermissions));
+
+                        // ✅ تحديث النسخة الأصلية
+                        originalPermissions = JSON.parse(JSON.stringify(userPermissions));
+
+                        // ✅ 🔥 تحديث الـ Sidebar
+                        if (typeof refreshSidebar === 'function') {
+                            refreshSidebar();
+                        }
+
+                        // ✅ 🔥 تحديث الـ Dashboard لو مفتوح
+                        if (typeof refreshDashboard === 'function') {
+                            refreshDashboard();
+                        }
+
+                        // ✅ تحديث قائمة المستخدمين
+                        await loadUsers();
+
+                        showToast('✅ تم حفظ الصلاحيات وتحديث كل شيء بنجاح', 'success');
+
+                    } else {
+                        showToast(result.message || 'حدث خطأ في حفظ الصلاحيات', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error saving permissions:', error);
+                    showToast('حدث خطأ في الاتصال بالسيرفر', 'error');
+                } finally {
+                    showLoading(false);
+                }
+            }
+
+            // ============================================================
+            // USER INFO
+            // ============================================================
+            async function initUser() {
+                try {
+                    const userData = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                    const userNameEl = document.getElementById('userName');
+                    const avatarEl = document.getElementById('topBarAvatar');
+
+                    if (userData.name && userNameEl) {
+                        userNameEl.textContent = userData.name;
+                    }
+
+                    if (avatarEl) {
+                        const initials = getInitials(userData.name || 'A');
+                        avatarEl.textContent = initials;
+                        avatarEl.style.background = 'linear-gradient(135deg, #4361ee, #3a0ca3)';
+
+                        const profilePicture = localStorage.getItem('user_profile_picture_' + userData.id);
+                        if (profilePicture) {
+                            const fullUrl = profilePicture.startsWith('http') ?
+                                profilePicture :
+                                window.location.origin + profilePicture + '?t=' + Date.now();
+                            avatarEl.innerHTML = '<img src="' + fullUrl + '" alt="صورة المستخدم" />';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading user info:', error);
+                }
+            }
+
+            // ============================================================
+            // DATE TIME
+            // ============================================================
+            function updateDateTime() {
+                const now = new Date();
+                const el = document.getElementById('currentDateTime');
+                if (el) {
+                    el.innerHTML = '<i class="far fa-calendar-alt"></i> ' + now.toLocaleString('ar-EG');
+                }
+            }
+
+            // ============================================================
+            // NOTIFICATIONS
+            // ============================================================
+            document.getElementById('notificationsBtn').addEventListener('click', function (e) {
+                e.stopPropagation();
+                const panel = document.getElementById('notificationPanel');
+                panel.classList.toggle('active');
+            });
+
+            document.addEventListener('click', function (e) {
+                const panel = document.getElementById('notificationPanel');
+                const btn = document.getElementById('notificationsBtn');
+                if (panel && panel.classList.contains('active') && !panel.contains(e.target) && !btn.contains(e.target)) {
+                    panel.classList.remove('active');
+                }
+            });
+
+            function markAllNotificationsRead() {
+                showToast('تم تحديث الإشعارات', 'success');
+            }
+
+            function clearAllNotifications() {
+                showToast('تم مسح الإشعارات', 'success');
+            }
+
+            // ============================================================
+            // KEYBOARD SHORTCUTS
+            // ============================================================
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    if (permissionsCard.classList.contains('active')) {
+                        selectedUserId = null;
+                        permissionsCard.classList.remove('active');
+                        renderUsers();
+                    }
+                    const input = document.getElementById('searchInput');
+                    if (input.classList.contains('show')) {
+                        input.classList.remove('show');
+                        input.value = '';
+                        filterPermissions('');
+                    }
+                }
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    if (permissionsCard.classList.contains('active')) {
+                        savePermissions();
+                    }
+                }
+                if (e.ctrlKey && e.key === 'a') {
+                    e.preventDefault();
+                    if (permissionsCard.classList.contains('active')) {
+                        selectAllPermissions();
+                    }
+                }
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    toggleSearch();
+                }
+            });
+
+            // ============================================================
+            // INIT
+            // ============================================================
+            async function init() {
+                initSidebar();
+
+                await initUser();
+                updateDateTime();
+                setInterval(updateDateTime, 60000);
+
+                await loadUsers();
+
+                const firstNonAdmin = allUsers.find(u => u.role !== 'admin');
+                if (firstNonAdmin) {
+                    setTimeout(() => {
+                        selectUser(firstNonAdmin.id);
+                    }, 500);
+                }
+
+                console.log('✅ Permissions page initialized successfully');
+                console.log('📊 Loaded ' + allUsers.length + ' users');
+                console.log('🔒 Total permissions: ' + Object.keys(PERMISSIONS).length);
+            }
+
+            // ============================================================
+            // EXPOSE GLOBALS
+            // ============================================================
+            window.selectUser = selectUser;
+            window.togglePermission = togglePermission;
+            window.toggleCategory = toggleCategory;
+            window.selectAllPermissions = selectAllPermissions;
+            window.deselectAllPermissions = deselectAllPermissions;
+            window.selectByRole = selectByRole;
+            window.toggleSearch = toggleSearch;
+            window.filterPermissions = filterPermissions;
+            window.resetToDefault = resetToDefault;
+            window.copyRolePermissions = copyRolePermissions;
+            window.cancelChanges = cancelChanges;
+            window.savePermissions = savePermissions;
+            window.markAllNotificationsRead = markAllNotificationsRead;
+            window.clearAllNotifications = clearAllNotifications;
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1577 @@
+﻿<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كشف حساب العملاء - نظام إدارة المخازن</title>
+    <link rel="stylesheet" href="common-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="theme-engine.js"></script>
+    <link rel="stylesheet" href="professional-toast.css">
+    <link rel="stylesheet" href="sidebar.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4361ee;
+            border-radius: 10px;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .menu-toggle {
+            display: none !important;
+        }
+
+        .menu-toggle:hover {
+            background: #f3f4f6;
+            transform: rotate(90deg);
+        }
+
+        .top-bar-title h2 {
+            font-size: 20px;
+            color: #1f2937;
+            font-weight: 700;
+        }
+
+        .top-bar-title h2 i {
+            color: #4361ee;
+        }
+
+        .top-bar-title p {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .notifications {
+            position: relative;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .notifications:hover {
+            background: #f3f4f6;
+            transform: scale(1.05);
+        }
+
+        .notifications i {
+            font-size: 20px;
+            color: #6b7280;
+        }
+
+        .notifications .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 20px;
+            font-weight: 600;
+            animation: pulse 1.5s infinite;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 30px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .user-info:hover {
+            background: #f3f4f6;
+            transform: scale(1.02);
+        }
+
+        .user-avatar-top {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .user-avatar-top img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info span {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        /* ===== PAGE CONTENT ===== */
+        .page-content {
+            padding: 30px;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        /* ===== STATEMENT CONTAINER ===== */
+        .statement-container {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ===== HEADER ===== */
+        .statement-header {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            padding: 25px 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .statement-header h1 {
+            font-size: 22px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .statement-header h1 i {
+            font-size: 28px;
+        }
+
+        .statement-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 22px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-white {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-white:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        /* ===== CUSTOMER FILTER ===== */
+        .customer-filter {
+            padding: 25px 30px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-group label i {
+            color: #4361ee;
+        }
+
+        /* ===== SEARCH WRAPPER ===== */
+        .search-wrapper {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .search-wrapper:focus-within {
+            border-color: #4361ee;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .search-wrapper .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 16px;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 14px 50px 14px 20px;
+            border: none;
+            font-family: inherit;
+            font-size: 14px;
+            background: transparent;
+            color: #1f2937;
+            outline: none;
+            border-radius: 12px;
+        }
+
+        .search-wrapper input::placeholder {
+            color: #9ca3af;
+        }
+
+        .search-clear-btn {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            transition: color 0.3s;
+            padding: 4px;
+        }
+
+        .search-clear-btn:hover {
+            color: #ef4444;
+        }
+
+        /* ===== SEARCH RESULTS ===== */
+        .search-results {
+            background: white;
+            border-top: 2px solid #f1f5f9;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 12px 12px;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .search-results.active {
+            display: block;
+            animation: fadeInUp 0.25s ease;
+        }
+
+        .search-result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .search-result-item:hover {
+            background: #f8fafc;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item .customer-name {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 15px;
+        }
+
+        .search-result-item .customer-name .highlight {
+            background: #fef3c7;
+            padding: 0 4px;
+            border-radius: 4px;
+        }
+
+        .search-result-item .customer-info {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .search-result-item .customer-info i {
+            margin-left: 4px;
+        }
+
+        .search-result-item .customer-balance {
+            font-weight: 700;
+            font-size: 13px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .search-result-item .customer-balance.debt {
+            color: #dc2626;
+            background: #fee2e2;
+        }
+
+        .search-result-item .customer-balance.credit {
+            color: #059669;
+            background: #d1fae5;
+        }
+
+        .search-result-item .customer-balance.zero {
+            color: #6b7280;
+            background: #f3f4f6;
+        }
+
+        .search-empty {
+            padding: 30px 20px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .search-empty i {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 10px;
+            color: #d1d5db;
+        }
+
+        /* ===== FILTER GROUP ===== */
+        .filter-group select,
+        .filter-group input[type="date"] {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            background: white;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .filter-group select:focus,
+        .filter-group input[type="date"]:focus {
+            border-color: #4361ee;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .filter-group .btn-primary {
+            width: 100%;
+            justify-content: center;
+            padding: 12px;
+        }
+
+        /* ===== SUMMARY CARDS ===== */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 25px 30px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .summary-card {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .summary-card .number {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .summary-card .number.green {
+            color: #10b981;
+        }
+
+        .summary-card .number.red {
+            color: #ef4444;
+        }
+
+        .summary-card .number.blue {
+            color: #4361ee;
+        }
+
+        .summary-card .number.orange {
+            color: #f59e0b;
+        }
+
+        .summary-card .label {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* ===== STATEMENT TABLE ===== */
+        .statement-table-wrap {
+            padding: 25px 30px;
+            overflow-x: auto;
+        }
+
+        .statement-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .statement-table thead th {
+            background: #f1f5f9;
+            padding: 14px 12px;
+            text-align: center;
+            font-weight: 700;
+            color: #1f2937;
+            border-bottom: 2px solid #e5e7eb;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .statement-table tbody td {
+            padding: 14px 12px;
+            text-align: center;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1f2937;
+        }
+
+        .statement-table tbody tr:hover td {
+            background: #f8fafc;
+        }
+
+        .statement-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .statement-table .total-row {
+            background: #f0fdf4;
+            font-weight: 700;
+        }
+
+        .statement-table .total-row td {
+            border-top: 2px solid #10b981;
+        }
+
+        .badge-type {
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-type.invoice {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-type.payment {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-type.initial {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-type.previous {
+            background: #f3e8ff;
+            color: #6d28d9;
+        }
+
+        .text-debit {
+            color: #ef4444;
+            font-weight: 700;
+        }
+
+        .text-credit {
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        .text-balance {
+            color: #4361ee;
+            font-weight: 700;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: #d1d5db;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* ===== LOADING ===== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            background: white;
+            padding: 35px;
+            border-radius: 24px;
+            text-align: center;
+        }
+
+        .loading-spinner i {
+            font-size: 48px;
+            color: #4361ee;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-spinner p {
+            margin-top: 15px;
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .summary-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+
+        @media (max-width: 768px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .page-content {
+                padding: 15px;
+            }
+
+            .top-bar {
+                padding: 0 15px;
+            }
+
+            .user-info span {
+                display: none;
+            }
+
+            .statement-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .customer-filter {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                min-width: 100%;
+            }
+
+            .statement-table-wrap {
+                padding: 15px;
+            }
+
+            .statement-table {
+                font-size: 12px;
+            }
+
+            .statement-table thead th,
+            .statement-table tbody td {
+                padding: 10px 6px;
+            }
+
+            .search-wrapper input {
+                font-size: 13px;
+                padding: 12px 45px 12px 15px;
+            }
+        }
+    }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== NOTIFICATION PANEL ===== -->
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-panel-header">
+            <h4><i class="fas fa-bell"></i> الإشعارات</h4>
+            <div>
+                <button onclick="markAllNotificationsRead()">تحديد الكل كمقروء</button>
+                <button onclick="clearAllNotifications()" style="margin-right: 8px;">مسح الكل</button>
+            </div>
+        </div>
+        <div class="notification-list" id="notificationList">
+            <div class="empty-notifications">لا توجد إشعارات</div>
+        </div>
+    </div>
+
+    <!-- ===== LOADING OVERLAY ===== -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner"></i>
+            <p>جاري تحميل كشف الحساب...</p>
+        </div>
+    </div>
+
+    <!-- ===== APP ===== -->
+    <div class="app">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="top-bar-title">
+                    <h2><i class="fas fa-file-invoice"></i> كشف حساب العملاء</h2>
+                    <p id="currentDateTime"><i class="far fa-calendar-alt"></i> جاري التحميل...</p>
+                </div>
+                <div class="top-bar-actions">
+                    <div class="notifications" id="notificationsBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notificationBadge">0</span>
+                    </div>
+                    <a href="profile.html" class="user-info">
+                        <div class="user-avatar-top" id="topBarAvatar">A</div>
+                        <span class="user-name-top" id="userName">مدير النظام</span>
+                    </a>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <div class="statement-container">
+
+                    <!-- ===== HEADER ===== -->
+                    <div class="statement-header">
+                        <h1>
+                            <i class="fas fa-file-invoice"></i>
+                            كشف حساب العملاء
+                        </h1>
+                        <div class="statement-actions">
+                            <button onclick="printStatement()" class="btn btn-white">
+                                <i class="fas fa-print"></i> طباعة
+                            </button>
+                            <button onclick="exportPDF()" class="btn btn-white">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </button>
+                            <button onclick="exportExcel()" class="btn btn-white">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ===== CUSTOMER FILTER ===== -->
+                    <div class="customer-filter">
+                        <div class="filter-group" style="flex: 2; min-width: 280px; position: relative;">
+                            <label><i class="fas fa-search"></i> بحث عن عميل</label>
+                            <div class="search-wrapper" style="border-radius: 12px;">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="searchInput" placeholder="ابحث باسم العميل أو رقم الهاتف..."
+                                    autocomplete="off">
+                                <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                                <div class="search-results" id="searchResults"></div>
+                            </div>
+                        </div>
+                        <div class="filter-group" style="flex: 0.5; min-width: 150px;">
+                            <label><i class="fas fa-calendar"></i> من تاريخ</label>
+                            <input type="date" id="startDate">
+                        </div>
+                        <div class="filter-group" style="flex: 0.5; min-width: 150px;">
+                            <label><i class="fas fa-calendar"></i> إلى تاريخ</label>
+                            <input type="date" id="endDate">
+                        </div>
+                        <div class="filter-group" style="flex: 0.3; min-width: 100px;">
+                            <label>&nbsp;</label>
+                            <button onclick="loadCustomerStatement()" class="btn btn-primary"
+                                style="width: 100%; justify-content: center;">
+                                <i class="fas fa-search"></i> عرض
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ===== SUMMARY CARDS ===== -->
+                    <div class="summary-cards" id="summaryCards">
+                        <div class="summary-card">
+                            <div class="number blue" id="totalDebit">0</div>
+                            <div class="label">💰 إجمالي المديونيات</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="number green" id="totalCredit">0</div>
+                            <div class="label">✅ إجمالي المدفوعات</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="number orange" id="totalBalance">0</div>
+                            <div class="label">📊 الرصيد المتبقي</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="number" id="totalInvoices">0</div>
+                            <div class="label">📄 عدد الفواتير</div>
+                        </div>
+                    </div>
+
+                    <!-- ===== STATEMENT TABLE ===== -->
+                    <div class="statement-table-wrap">
+                        <table class="statement-table" id="statementTable">
+                            <thead>
+                                <tr>
+                                    <th>رقم الفاتورة</th>
+                                    <th>تاريخ الحركة</th>
+                                    <th>النوع</th>
+                                    <th>مدين</th>
+                                    <th>دائن</th>
+                                    <th>الرصيد</th>
+                                    <th>ملاحظات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="statementBody">
+                                <tr>
+                                    <td colspan="7">
+                                        <div class="empty-state">
+                                            <i class="fas fa-user"></i>
+                                            <h3>اختر عميل لعرض كشف الحساب</h3>
+                                            <p>سيتم عرض جميع حركات العميل من فواتير ومدفوعات</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot id="statementFooter"></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="config.js"></script>
+    <script src="professional-toast.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="check-permission.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            // ============================================================
+            // CONFIGURATION
+            // ============================================================
+            const API_URL = window.API_URL || 'http://localhost:5000/api';
+            let currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            let currentCustomerId = null;
+            let allCustomers = [];
+            let statementData = [];
+            let runningBalance = 0;
+
+            // ============================================================
+            // DOM REFS
+            // ============================================================
+            const $ = (id) => document.getElementById(id);
+            const searchInput = $('searchInput');
+            const searchResults = $('searchResults');
+            const searchClearBtn = $('searchClearBtn');
+            const startDate = $('startDate');
+            const endDate = $('endDate');
+            const statementBody = $('statementBody');
+            const statementFooter = $('statementFooter');
+            const totalDebit = $('totalDebit');
+            const totalCredit = $('totalCredit');
+            const totalBalance = $('totalBalance');
+            const totalInvoices = $('totalInvoices');
+            const loadingOverlay = $('loadingOverlay');
+
+            // ============================================================
+            // UTILITY FUNCTIONS
+            // ============================================================
+            function formatDate(dateStr) {
+                if (!dateStr) return '—';
+                try {
+                    const d = new Date(dateStr);
+                    if (isNaN(d.getTime())) return dateStr;
+                    return d.toLocaleDateString('ar-EG', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                } catch {
+                    return dateStr;
+                }
+            }
+
+            function formatCurrency(amount) {
+                return Number(amount || 0).toFixed(2) + ' ج.م';
+            }
+
+            function showLoading(show) {
+                loadingOverlay.classList.toggle('active', show);
+            }
+
+            function showToast(message, type) {
+                type = type || 'success';
+                if (typeof showProfessionalToast === 'function') {
+                    showProfessionalToast(message, type);
+                } else {
+                    alert(message);
+                }
+            }
+
+            // ============================================================
+            // SIDEBAR INIT
+            // ============================================================
+            function initSidebar() {
+                // sidebar.js هو المسؤول عن التحكم في الـ Sidebar
+                const menuToggle = document.getElementById('menuToggle');
+                if (menuToggle) {
+                    menuToggle.style.display = 'none';
+                }
+            }
+
+            // ============================================================
+            // API FUNCTIONS
+            // ============================================================
+            async function fetchAPI(endpoint, options) {
+                options = options || {};
+                try {
+                    const headers = {
+                        'Content-Type': 'application/json'
+                    };
+
+                    const response = await fetch(API_URL + endpoint, {
+                        method: options.method || 'GET',
+                        headers: headers,
+                        body: options.body || null
+                    });
+
+                    if (!response.ok) {
+                        console.warn('API response not OK:', response.status, endpoint);
+                        // مش هنرمي error، هنحاول نكمل
+                    }
+                    
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error('API Error:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            // ============================================================
+            // LOAD CUSTOMERS FOR SEARCH
+            // ============================================================
+            async function loadCustomers() {
+                try {
+                    const result = await fetchAPI('/customers');
+                    if (result.success && Array.isArray(result.data)) {
+                        allCustomers = result.data;
+                    }
+                } catch (error) {
+                    console.error('Error loading customers:', error);
+                }
+            }
+
+            // ============================================================
+            // SEARCH CUSTOMERS
+            // ============================================================
+            let searchTimeout = null;
+
+            function setupSearch() {
+                searchInput.addEventListener('input', function () {
+                    const term = this.value.trim();
+                    if (searchTimeout) clearTimeout(searchTimeout);
+
+                    if (term.length === 0) {
+                        searchResults.classList.remove('active');
+                        searchResults.innerHTML = '';
+                        searchClearBtn.style.display = 'none';
+                        return;
+                    }
+
+                    searchClearBtn.style.display = 'block';
+
+                    searchTimeout = setTimeout(function () {
+                        performSearch(term);
+                    }, 300);
+                });
+
+                searchInput.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const term = this.value.trim();
+                        if (term) {
+                            const firstResult = searchResults.querySelector('.search-result-item');
+                            if (firstResult) {
+                                firstResult.click();
+                            }
+                        }
+                    }
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!e.target.closest('.search-wrapper')) {
+                        searchResults.classList.remove('active');
+                    }
+                });
+            }
+
+            function performSearch(term) {
+                const termLower = term.toLowerCase();
+                const results = allCustomers.filter(function (c) {
+                    return (c.name && c.name.toLowerCase().includes(termLower)) ||
+                        (c.phone && c.phone.includes(term));
+                });
+
+                if (results.length === 0) {
+                    searchResults.innerHTML = `
+                        <div class="search-empty">
+                            <i class="fas fa-search"></i>
+                            لا توجد نتائج لـ "<strong>${term}</strong>"
+                        </div>
+                    `;
+                    searchResults.classList.add('active');
+                    return;
+                }
+
+                let html = '';
+                results.forEach(function (c) {
+                    const balance = parseFloat(c.balance || 0);
+                    const balanceClass = balance > 0 ? 'debt' : (balance < 0 ? 'credit' : 'zero');
+                    const balanceText = balance > 0 ? 'مديونية: ' + balance.toFixed(2) + ' ج.م' :
+                        balance < 0 ? 'رصيد: ' + Math.abs(balance).toFixed(2) + ' ج.م' : 'رصيد صفري';
+
+                    const displayName = c.name;
+                    const index = c.name.toLowerCase().indexOf(termLower);
+                    let highlightedName = displayName;
+                    if (index !== -1) {
+                        const before = displayName.substring(0, index);
+                        const match = displayName.substring(index, index + term.length);
+                        const after = displayName.substring(index + term.length);
+                        highlightedName = before + '<span class="highlight">' + match + '</span>' + after;
+                    }
+
+                    html += `
+                        <div class="search-result-item" onclick="selectCustomer(${c.id}, '${c.name.replace(/'/g, "\\'")}')">
+                            <div>
+                                <div class="customer-name">${highlightedName}</div>
+                                <div class="customer-info">
+                                    <i class="fas fa-phone"></i> ${c.phone || 'لا يوجد هاتف'}
+                                </div>
+                            </div>
+                            <div class="customer-balance ${balanceClass}">${balanceText}</div>
+                        </div>
+                    `;
+                });
+
+                searchResults.innerHTML = html;
+                searchResults.classList.add('active');
+            }
+
+            function clearSearch() {
+                searchInput.value = '';
+                searchResults.classList.remove('active');
+                searchResults.innerHTML = '';
+                searchClearBtn.style.display = 'none';
+                searchInput.focus();
+            }
+
+            // ============================================================
+            // SELECT CUSTOMER
+            // ============================================================
+            function selectCustomer(id, name) {
+                currentCustomerId = id;
+                searchInput.value = name;
+                searchResults.classList.remove('active');
+                searchResults.innerHTML = '';
+                searchClearBtn.style.display = 'none';
+                showToast('✅ تم اختيار العميل: ' + name, 'success');
+                loadCustomerStatement();
+            }
+
+            // ============================================================
+            // LOAD CUSTOMER STATEMENT
+            // ============================================================
+            async function loadCustomerStatement() {
+                if (!currentCustomerId) {
+                    showToast('يرجى اختيار عميل أولاً', 'warning');
+                    return;
+                }
+
+                showLoading(true);
+                statementData = [];
+                runningBalance = 0;
+
+                try {
+                    const from = startDate.value || '';
+                    const to = endDate.value || '';
+
+                    // جلب المديونيات والدفعات
+                    const [debtsRes, paymentsRes] = await Promise.all([
+                        fetchAPI('/customers/' + currentCustomerId + '/debts'),
+                        fetchAPI('/customers/' + currentCustomerId + '/payments')
+                    ]);
+
+                    // بناء كشف الحساب
+                    let entries = [];
+
+                    // إضافة المديونيات
+                    if (debtsRes.success && Array.isArray(debtsRes.data)) {
+                        debtsRes.data.forEach(function (d) {
+                            const date = d.date || d.created_at;
+                            // فلترة حسب التاريخ
+                            if (from && new Date(date) < new Date(from)) return;
+                            if (to && new Date(date) > new Date(to)) return;
+
+                            entries.push({
+                                invoiceNumber: d.id || 'DEBT-' + Date.now(),
+                                date: date,
+                                type: 'debt',
+                                typeLabel: 'مديونية',
+                                badgeClass: 'invoice',
+                                debit: parseFloat(d.amount || 0),
+                                credit: 0,
+                                description: d.description || 'فاتورة شراء آجلة',
+                                remaining: parseFloat(d.remaining || 0)
+                            });
+                        });
+                    }
+
+                    // إضافة الدفعات
+                    if (paymentsRes.success && Array.isArray(paymentsRes.data)) {
+                        paymentsRes.data.forEach(function (p) {
+                            const date = p.paymentDate || p.created_at;
+                            if (from && new Date(date) < new Date(from)) return;
+                            if (to && new Date(date) > new Date(to)) return;
+
+                            entries.push({
+                                invoiceNumber: p.id || 'PAY-' + Date.now(),
+                                date: date,
+                                type: 'payment',
+                                typeLabel: 'دفعة',
+                                badgeClass: 'payment',
+                                debit: 0,
+                                credit: parseFloat(p.amount || 0),
+                                description: p.notes || 'دفعة من العميل',
+                                remaining: 0
+                            });
+                        });
+                    }
+
+                    // ترتيب حسب التاريخ
+                    entries.sort(function (a, b) {
+                        return new Date(a.date) - new Date(b.date);
+                    });
+
+                    // حساب الرصيد الجاري
+                    let balance = 0;
+                    statementData = entries.map(function (entry) {
+                        if (entry.type === 'debt') {
+                            balance += entry.debit;
+                        } else {
+                            balance -= entry.credit;
+                        }
+                        return {
+                            ...entry,
+                            runningBalance: balance
+                        };
+                    });
+
+                    // عرض الكشف
+                    renderStatement();
+
+                } catch (error) {
+                    console.error('Error loading statement:', error);
+                    showToast('حدث خطأ في تحميل كشف الحساب', 'error');
+                } finally {
+                    showLoading(false);
+                }
+            }
+
+            // ============================================================
+            // RENDER STATEMENT
+            // ============================================================
+            function renderStatement() {
+                if (statementData.length === 0) {
+                    statementBody.innerHTML = `
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="fas fa-inbox"></i>
+                                    <h3>لا توجد حركات في هذه الفترة</h3>
+                                    <p>لا توجد فواتير أو دفعات مسجلة للعميل في هذه الفترة</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    statementFooter.innerHTML = '';
+                    updateSummary(0, 0, 0, 0);
+                    return;
+                }
+
+                let html = '';
+                let totalDebitSum = 0;
+                let totalCreditSum = 0;
+                let invoiceCount = 0;
+
+                statementData.forEach(function (entry, index) {
+                    totalDebitSum += entry.debit;
+                    totalCreditSum += entry.credit;
+                    if (entry.type === 'debt') invoiceCount++;
+
+                    const isPayment = entry.type === 'payment';
+                    const isDebt = entry.type === 'debt';
+
+                    html += `
+                        <tr>
+                            <td>${entry.invoiceNumber || '—'}</td>
+                            <td>${formatDate(entry.date)}</td>
+                            <td><span class="badge-type ${entry.badgeClass}">${entry.typeLabel}</span></td>
+                            <td class="${isDebt ? 'text-debit' : ''}">${isDebt ? formatCurrency(entry.debit) : '—'}</td>
+                            <td class="${isPayment ? 'text-credit' : ''}">${isPayment ? formatCurrency(entry.credit) : '—'}</td>
+                            <td class="text-balance">${formatCurrency(entry.runningBalance)}</td>
+                            <td>${entry.description || '—'}</td>
+                        </tr>
+                    `;
+                });
+
+                statementBody.innerHTML = html;
+
+                // إضافة صف الإجمالي
+                const finalBalance = statementData[statementData.length - 1]?.runningBalance || 0;
+                statementFooter.innerHTML = `
+                    <tr class="total-row">
+                        <td colspan="3"><strong>الإجمالي</strong></td>
+                        <td><strong>${formatCurrency(totalDebitSum)}</strong></td>
+                        <td><strong>${formatCurrency(totalCreditSum)}</strong></td>
+                        <td><strong>${formatCurrency(finalBalance)}</strong></td>
+                        <td></td>
+                    </tr>
+                `;
+
+                updateSummary(totalDebitSum, totalCreditSum, finalBalance, invoiceCount);
+            }
+
+            // ============================================================
+            // UPDATE SUMMARY
+            // ============================================================
+            function updateSummary(debit, credit, balance, count) {
+                totalDebit.textContent = formatCurrency(debit);
+                totalCredit.textContent = formatCurrency(credit);
+                totalBalance.textContent = formatCurrency(balance);
+                totalInvoices.textContent = count;
+
+                // تغيير لون الرصيد
+                if (balance > 0) {
+                    totalBalance.style.color = '#ef4444';
+                } else if (balance < 0) {
+                    totalBalance.style.color = '#10b981';
+                } else {
+                    totalBalance.style.color = '#6b7280';
+                }
+            }
+
+            // ============================================================
+            // PRINT STATEMENT
+            // ============================================================
+            function printStatement() {
+                window.print();
+            }
+
+            // ============================================================
+            // EXPORT PDF
+            // ============================================================
+            function exportPDF() {
+                const element = document.querySelector('.statement-container');
+                if (element && typeof html2pdf !== 'undefined') {
+                    showToast('جاري تصدير PDF...', 'info');
+                    html2pdf()
+                        .set({
+                            margin: 0.5,
+                            filename: 'كشف_حساب_' + new Date().toISOString().slice(0, 10) + '.pdf',
+                            image: { type: 'jpeg', quality: 0.98 },
+                            html2canvas: { scale: 2, useCORS: true },
+                            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                        })
+                        .from(element)
+                        .save()
+                        .then(function () {
+                            showToast('✅ تم تصدير PDF بنجاح', 'success');
+                        })
+                        .catch(function (error) {
+                            console.error('PDF export error:', error);
+                            showToast('حدث خطأ في تصدير PDF', 'error');
+                        });
+                } else {
+                    showToast('جاري طباعة... يمكنك حفظها كـ PDF من نافذة الطباعة', 'info');
+                    printStatement();
+                }
+            }
+
+            // ============================================================
+            // EXPORT EXCEL
+            // ============================================================
+            function exportExcel() {
+                if (statementData.length === 0) {
+                    showToast('لا توجد بيانات للتصدير', 'error');
+                    return;
+                }
+
+                try {
+                    const data = statementData.map(function (entry) {
+                        return {
+                            'رقم الفاتورة': entry.invoiceNumber || '—',
+                            'التاريخ': formatDate(entry.date),
+                            'النوع': entry.typeLabel,
+                            'مدين': entry.debit > 0 ? entry.debit.toFixed(2) : '',
+                            'دائن': entry.credit > 0 ? entry.credit.toFixed(2) : '',
+                            'الرصيد': entry.runningBalance.toFixed(2),
+                            'ملاحظات': entry.description || ''
+                        };
+                    });
+
+                    const ws = XLSX.utils.json_to_sheet(data);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, 'كشف_الحساب');
+                    XLSX.writeFile(wb, 'كشف_حساب_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+                    showToast('✅ تم تصدير Excel بنجاح', 'success');
+                } catch (error) {
+                    console.error('Excel export error:', error);
+                    showToast('حدث خطأ في تصدير Excel', 'error');
+                }
+            }
+
+            // ============================================================
+            // USER INFO
+            // ============================================================
+            async function initUser() {
+                try {
+                    const userData = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                    const userNameEl = document.getElementById('userName');
+                    const avatarEl = document.getElementById('topBarAvatar');
+
+                    if (userData.name && userNameEl) {
+                        userNameEl.textContent = userData.name;
+                    }
+
+                    if (avatarEl) {
+                        const initials = (userData.name || 'A').split(' ').map(function (n) { return n[0]; }).join('').substring(0, 2).toUpperCase();
+                        avatarEl.textContent = initials;
+                        avatarEl.style.background = 'linear-gradient(135deg, #4361ee, #3a0ca3)';
+                        
+                        // محاولة جلب الصورة الشخصية من localStorage مباشرة
+                        const savedPicture = localStorage.getItem('user_profile_picture_' + userData.id);
+                        if (savedPicture && savedPicture !== 'null' && savedPicture !== 'undefined' && avatarEl) {
+                            avatarEl.innerHTML = '<img src="' + savedPicture + '" alt="صورة المستخدم" />';
+                        }
+                    }
+
+                } catch (error) {
+                    console.error('Error loading user info:', error);
+                }
+            }
+
+            // ============================================================
+            // DATE TIME
+            // ============================================================
+            function updateDateTime() {
+                const now = new Date();
+                const el = document.getElementById('currentDateTime');
+                if (el) {
+                    el.innerHTML = '<i class="far fa-calendar-alt"></i> ' + now.toLocaleString('ar-EG');
+                }
+            }
+
+            // ============================================================
+            // NOTIFICATIONS
+            // ============================================================
+            document.getElementById('notificationsBtn').addEventListener('click', function (e) {
+                e.stopPropagation();
+                const panel = document.getElementById('notificationPanel');
+                panel.classList.toggle('active');
+            });
+
+            document.addEventListener('click', function (e) {
+                const panel = document.getElementById('notificationPanel');
+                const btn = document.getElementById('notificationsBtn');
+                if (panel && panel.classList.contains('active') && !panel.contains(e.target) && !btn.contains(e.target)) {
+                    panel.classList.remove('active');
+                }
+            });
+
+            function markAllNotificationsRead() {
+                showToast('تم تحديث الإشعارات', 'success');
+            }
+
+            function clearAllNotifications() {
+                showToast('تم مسح الإشعارات', 'success');
+            }
+
+            // ============================================================
+            // SET DEFAULT DATES
+            // ============================================================
+            function setDefaultDates() {
+                const now = new Date();
+                const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+                startDate.value = firstDay.toISOString().slice(0, 10);
+                endDate.value = now.toISOString().slice(0, 10);
+            }
+
+            // ============================================================
+            // KEYBOARD SHORTCUTS
+            // ============================================================
+            document.addEventListener('keydown', function (e) {
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
+
+            // ============================================================
+            // INIT
+            // ============================================================
+            async function init() {
+                // تهيئة الـ Sidebar
+                initSidebar();
+
+                await initUser();
+                updateDateTime();
+                setInterval(updateDateTime, 60000);
+
+                setDefaultDates();
+
+                await loadCustomers();
+
+                setupSearch();
+
+                // تحميل كشف الحساب تلقائياً إذا كان هناك عميل محدد في URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const customerId = urlParams.get('id');
+                if (customerId) {
+                    const customer = allCustomers.find(function (c) { return c.id == customerId; });
+                    if (customer) {
+                        currentCustomerId = parseInt(customerId);
+                        searchInput.value = customer.name;
+                        await loadCustomerStatement();
+                    }
+                }
+
+                console.log('✅ Customer Statement page initialized successfully');
+            }
+
+            // ============================================================
+            // EXPOSE GLOBALS
+            // ============================================================
+            window.selectCustomer = selectCustomer;
+            window.clearSearch = clearSearch;
+            window.loadCustomerStatement = loadCustomerStatement;
+            window.printStatement = printStatement;
+            window.exportPDF = exportPDF;
+            window.exportExcel = exportExcel;
+            window.markAllNotificationsRead = markAllNotificationsRead;
+            window.clearAllNotifications = clearAllNotifications;
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+</body>
+
+</html>
